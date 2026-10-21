@@ -25,8 +25,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountRecordsApi;
 import io.fireflysoftware.domain.configuration.sdk.api.EnvironmentConfigApi;
 import io.fireflysoftware.domain.configuration.sdk.invoker.ApiClient;
+import io.fireflysoftware.domain.payments.sdk.api.PaymentRecordsApi;
 import io.fireflysoftware.domain.referencedata.sdk.api.ReferenceMastersApi;
 
 import java.util.LinkedHashMap;
@@ -113,11 +115,28 @@ public class TerminalWiring {
     }
 
     @Bean
+    public InstructionPort instructionPort(TerminalLocations locations) {
+        io.fireflysoftware.domain.banking.accounts.sdk.invoker.ApiClient accounts =
+                new io.fireflysoftware.domain.banking.accounts.sdk.invoker.ApiClient();
+        accounts.setBasePath(locations.getAccountsBaseUrl());
+        io.fireflysoftware.domain.payments.sdk.invoker.ApiClient payments =
+                new io.fireflysoftware.domain.payments.sdk.invoker.ApiClient();
+        payments.setBasePath(locations.getPaymentsBaseUrl());
+        return new DomainInstructionClient(new AccountRecordsApi(accounts), new PaymentRecordsApi(payments));
+    }
+
+    @Bean
     public StaffTerminal staffTerminal(IdentityPort identityPort, AccessPort accessPort, ImpersonationPort impersonationPort,
                                        ConfigurationPort configurationPort, DistributorPort distributorPort,
                                        StaffRecordPort recordPort, AuditPort auditPort) {
         return new StaffTerminal(identityPort, accessPort, impersonationPort, configurationPort, distributorPort, recordPort,
                 auditPort, "ACCOUNT", FinanceArea.ACCOUNT.primaryId().toString(), FinanceArea.PREFIX);
+    }
+
+    @Bean
+    public InstructionDesk instructionDesk(IdentityPort identityPort, AccessPort accessPort, InstructionPort instructionPort) {
+        return new InstructionDesk(identityPort, accessPort, instructionPort, "ACCOUNT",
+                FinanceArea.ACCOUNT.primaryId().toString());
     }
 
     @ConfigurationProperties(prefix = "firefly.terminal")
@@ -126,6 +145,8 @@ public class TerminalWiring {
         private String configurationBaseUrl = "http://localhost:8088";
         private String masterDataBaseUrl = "http://localhost:8089";
         private String distributorBaseUrl = "http://localhost:8070";
+        private String accountsBaseUrl = "http://localhost:8090";
+        private String paymentsBaseUrl = "http://localhost:8092";
         private Map<String, String> domains = new LinkedHashMap<>();
 
         public String getAdapter() {
@@ -158,6 +179,22 @@ public class TerminalWiring {
 
         public void setDistributorBaseUrl(String distributorBaseUrl) {
             this.distributorBaseUrl = distributorBaseUrl;
+        }
+
+        public String getAccountsBaseUrl() {
+            return accountsBaseUrl;
+        }
+
+        public void setAccountsBaseUrl(String accountsBaseUrl) {
+            this.accountsBaseUrl = accountsBaseUrl;
+        }
+
+        public String getPaymentsBaseUrl() {
+            return paymentsBaseUrl;
+        }
+
+        public void setPaymentsBaseUrl(String paymentsBaseUrl) {
+            this.paymentsBaseUrl = paymentsBaseUrl;
         }
 
         public Map<String, String> getDomains() {

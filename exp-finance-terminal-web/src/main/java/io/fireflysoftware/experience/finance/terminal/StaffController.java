@@ -37,9 +37,11 @@ import java.util.UUID;
 public class StaffController {
 
     private final StaffTerminal terminal;
+    private final InstructionDesk instructions;
 
-    public StaffController(StaffTerminal terminal) {
+    public StaffController(StaffTerminal terminal, InstructionDesk instructions) {
         this.terminal = terminal;
+        this.instructions = instructions;
     }
 
     @PostMapping("/sessions")
@@ -106,6 +108,24 @@ public class StaffController {
     @GetMapping("/masters/{type}")
     public Flux<MasterRecord> masters(@RequestHeader("X-Actor-Id") UUID actorId, @PathVariable String type) {
         return terminal.masters(actorId, type);
+    }
+
+    @GetMapping("/accounts/{accountId}/servicing-mandates/{mandateId}")
+    public Mono<InstructionPort.Mandate> mandate(@RequestHeader("X-Actor-Id") UUID actorId,
+                                                  @PathVariable UUID accountId, @PathVariable UUID mandateId) {
+        return instructions.mandate(actorId, accountId, mandateId);
+    }
+
+    @GetMapping("/standing-orders/{runId}")
+    public Mono<InstructionPort.StandingOrder> standingOrder(@RequestHeader("X-Actor-Id") UUID actorId,
+                                                              @PathVariable UUID runId) {
+        return instructions.standingOrder(actorId, runId);
+    }
+
+    @GetMapping("/direct-debits/{mandateId}")
+    public Mono<InstructionPort.DirectDebit> directDebit(@RequestHeader("X-Actor-Id") UUID actorId,
+                                                          @PathVariable UUID mandateId) {
+        return instructions.directDebit(actorId, mandateId);
     }
 
     public record RecordBody(UUID customerPartyId, String reason, String note, UUID distributorId,
