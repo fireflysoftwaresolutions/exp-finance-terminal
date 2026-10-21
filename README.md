@@ -17,7 +17,7 @@ Staff terminal for financial administration. An employee signs in. A customer su
 
 Repository: [https://github.com/fireflysoftwaresolutions/exp-finance-terminal](https://github.com/fireflysoftwaresolutions/exp-finance-terminal)
 
-Version 26.10.4.
+Version 26.10.5.
 
 ## Employee and customer
 

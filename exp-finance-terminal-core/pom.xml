@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.fireflysoftware</groupId>
         <artifactId>exp-finance-terminal</artifactId>
-        <version>26.10.4</version>
+        <version>26.10.5</version>
     </parent>
 
     <artifactId>exp-finance-terminal-core</artifactId>
@@ -29,32 +29,32 @@
         <dependency>
             <groupId>io.fireflysoftware</groupId>
             <artifactId>domain-core-configuration-sdk</artifactId>
-            <version>26.10.4</version>
+            <version>26.10.5</version>
         </dependency>
         <dependency>
             <groupId>io.fireflysoftware</groupId>
             <artifactId>domain-core-reference-data-sdk</artifactId>
-            <version>26.10.4</version>
+            <version>26.10.5</version>
         </dependency>
         <dependency>
             <groupId>io.fireflysoftware</groupId>
             <artifactId>domain-banking-accounts-sdk</artifactId>
-            <version>26.10.4</version>
+            <version>26.10.5</version>
         </dependency>
         <dependency>
             <groupId>io.fireflysoftware</groupId>
             <artifactId>domain-payments-sdk</artifactId>
-            <version>26.10.4</version>
+            <version>26.10.5</version>
         </dependency>
         <dependency>
             <groupId>io.fireflysoftware</groupId>
             <artifactId>domain-core-security-center-sdk</artifactId>
-            <version>26.10.4</version>
+            <version>26.10.5</version>
         </dependency>
         <dependency>
             <groupId>io.fireflysoftware</groupId>
             <artifactId>domain-core-security-center-core</artifactId>
-            <version>26.10.4</version>
+            <version>26.10.5</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
