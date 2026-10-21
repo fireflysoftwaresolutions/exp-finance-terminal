@@ -17,6 +17,7 @@
 
 package io.fireflysoftware.experience.finance.terminal;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -95,6 +96,11 @@ public class StaffController {
     public Mono<String> putProperty(@RequestHeader("X-Actor-Id") UUID actorId, @PathVariable String key,
                                     @RequestBody Map<String, String> body) {
         return terminal.putProperty(actorId, key, body.get("value"));
+    }
+
+    @GetMapping(value = "/configuration/{key}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Mono<String> getProperty(@RequestHeader("X-Actor-Id") UUID actorId, @PathVariable String key) {
+        return terminal.getProperty(actorId, key);
     }
 
     @GetMapping("/masters/{type}")
