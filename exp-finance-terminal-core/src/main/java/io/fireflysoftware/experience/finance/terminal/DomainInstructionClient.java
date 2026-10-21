@@ -17,7 +17,7 @@
 
 package io.fireflysoftware.experience.finance.terminal;
 
-import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountRecordsApi;
+import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountRecordsControllerApi;
 import io.fireflysoftware.domain.payments.sdk.api.PaymentRecordsApi;
 import reactor.core.publisher.Mono;
 
@@ -28,30 +28,32 @@ import java.util.UUID;
  */
 public final class DomainInstructionClient implements InstructionPort {
 
-    private final AccountRecordsApi accounts;
+    private final AccountRecordsControllerApi accounts;
     private final PaymentRecordsApi payments;
 
-    public DomainInstructionClient(AccountRecordsApi accounts, PaymentRecordsApi payments) {
+    public DomainInstructionClient(AccountRecordsControllerApi accounts, PaymentRecordsApi payments) {
         this.accounts = accounts;
         this.payments = payments;
     }
 
     @Override
     public Mono<Mandate> mandate(UUID accountId, UUID mandateId) {
-        return accounts.servicingMandate(accountId, mandateId)
-                .map(row -> new Mandate(row.id(), row.accountId(), row.partyId(), row.role(), row.active()));
+        return accounts.servicingMandate1(accountId, mandateId, null)
+                .map(row -> new Mandate(row.getId(), row.getAccountId(), row.getPartyId(), row.getRole(),
+                        Boolean.TRUE.equals(row.getActive())));
     }
 
     @Override
     public Mono<StandingOrder> standingOrder(UUID runId) {
-        return payments.standingOrder(runId)
-                .map(row -> new StandingOrder(row.id(), row.paymentScheduleId(), row.amount(), row.currency(), row.valueDate()));
+        return payments.readStandingOrder(runId)
+                .map(row -> new StandingOrder(row.getId(), row.getPaymentScheduleId(), row.getAmount(),
+                        row.getCurrency(), row.getValueDate()));
     }
 
     @Override
     public Mono<DirectDebit> directDebit(UUID mandateId) {
-        return payments.directDebit(mandateId)
-                .map(row -> new DirectDebit(row.id(), row.debtorAccountId(), row.creditorPartyId(), row.status(),
-                        row.amountLimit(), row.currency(), row.reference()));
+        return payments.readDirectDebit(mandateId)
+                .map(row -> new DirectDebit(row.getId(), row.getDebtorAccountId(), row.getCreditorPartyId(),
+                        row.getStatus(), row.getAmountLimit(), row.getCurrency(), row.getReference()));
     }
 }

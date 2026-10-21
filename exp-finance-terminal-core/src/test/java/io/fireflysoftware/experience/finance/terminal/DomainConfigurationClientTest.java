@@ -17,7 +17,10 @@
 package io.fireflysoftware.experience.finance.terminal;
 
 import io.fireflysoftware.domain.configuration.sdk.api.EnvironmentConfigApi;
-import io.fireflysoftware.domain.referencedata.sdk.api.ReferenceMastersApi;
+import io.fireflysoftware.domain.configuration.sdk.model.EnvironmentConfig;
+import io.fireflysoftware.domain.configuration.sdk.model.EnvironmentConfigPage;
+import io.fireflysoftware.domain.referencedata.sdk.api.MastersApi;
+import io.fireflysoftware.domain.referencedata.sdk.model.CatalogEntry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -25,9 +28,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,25 +43,28 @@ class DomainConfigurationClientTest {
     @Mock
     private EnvironmentConfigApi configuration;
     @Mock
-    private ReferenceMastersApi masters;
+    private MastersApi masters;
 
     @Test
     void readsAndWritesConfigurationAndReferenceDataThroughTheDomainSdks() {
         DomainConfigurationClient client = new DomainConfigurationClient(configuration, masters);
         UUID employeeId = UUID.randomUUID();
         UUID currencyId = UUID.randomUUID();
-        when(configuration.getRequired("payments.catalog")).thenReturn(Mono.just("sandbox"));
-        when(configuration.put("payments.catalog", "live", employeeId)).thenReturn(Mono.just("live"));
-        when(masters.list("CURRENCY")).thenReturn(Flux.just(
-                new ReferenceMastersApi.MasterRow("CURRENCY", currencyId, "EUR", "Euro")));
+        when(configuration.filterConfigs(eq(0), eq(200), any())).thenReturn(Mono.just(
+                new EnvironmentConfigPage().addContentItem(
+                        new EnvironmentConfig().configKey("payments.catalog").configValue("sandbox"))));
+        when(configuration.createConfig(any())).thenReturn(Mono.just(new EnvironmentConfig().configValue("live")));
+        when(masters.listMaster("CURRENCY")).thenReturn(Flux.just(
+                new CatalogEntry().id(currencyId).code("EUR").label("Euro")));
 
         assertThat(client.getRequired("payments.catalog").block()).isEqualTo("sandbox");
         assertThat(client.put("payments.catalog", "live", employeeId).block()).isEqualTo("live");
         MasterRecord row = client.masters("CURRENCY").blockFirst();
 
         assertThat(row.code()).isEqualTo("EUR");
-        verify(configuration).getRequired("payments.catalog");
-        verify(configuration).put("payments.catalog", "live", employeeId);
-        verify(masters).list("CURRENCY");
+        assertThat(row.name()).isEqualTo("Euro");
+        verify(configuration).filterConfigs(eq(0), eq(200), eq(Map.of()));
+        verify(configuration).createConfig(any());
+        verify(masters).listMaster("CURRENCY");
     }
 }

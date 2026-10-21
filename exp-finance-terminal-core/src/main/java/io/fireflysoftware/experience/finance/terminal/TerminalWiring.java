@@ -25,11 +25,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountRecordsApi;
+import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountRecordsControllerApi;
 import io.fireflysoftware.domain.configuration.sdk.api.EnvironmentConfigApi;
 import io.fireflysoftware.domain.configuration.sdk.invoker.ApiClient;
 import io.fireflysoftware.domain.payments.sdk.api.PaymentRecordsApi;
-import io.fireflysoftware.domain.referencedata.sdk.api.ReferenceMastersApi;
+import io.fireflysoftware.domain.referencedata.sdk.api.MastersApi;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -95,7 +95,7 @@ public class TerminalWiring {
         io.fireflysoftware.domain.referencedata.sdk.invoker.ApiClient masters =
                 new io.fireflysoftware.domain.referencedata.sdk.invoker.ApiClient();
         masters.setBasePath(locations.getMasterDataBaseUrl());
-        return new DomainConfigurationClient(new EnvironmentConfigApi(configuration), new ReferenceMastersApi(masters));
+        return new DomainConfigurationClient(new EnvironmentConfigApi(configuration), new MastersApi(masters));
     }
 
     @Bean
@@ -118,7 +118,7 @@ public class TerminalWiring {
         io.fireflysoftware.domain.payments.sdk.invoker.ApiClient payments =
                 new io.fireflysoftware.domain.payments.sdk.invoker.ApiClient();
         payments.setBasePath(locations.getPaymentsBaseUrl());
-        return new DomainInstructionClient(new AccountRecordsApi(accounts), new PaymentRecordsApi(payments));
+        return new DomainInstructionClient(new AccountRecordsControllerApi(accounts), new PaymentRecordsApi(payments));
     }
 
     @Bean

@@ -17,8 +17,11 @@
 
 package io.fireflysoftware.experience.finance.terminal;
 
-import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountRecordsApi;
+import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountRecordsControllerApi;
+import io.fireflysoftware.domain.banking.accounts.sdk.model.MandateView;
 import io.fireflysoftware.domain.payments.sdk.api.PaymentRecordsApi;
+import io.fireflysoftware.domain.payments.sdk.model.DirectDebitView;
+import io.fireflysoftware.domain.payments.sdk.model.StandingOrderView;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -37,7 +40,7 @@ import static org.mockito.Mockito.when;
 class DomainInstructionClientTest {
 
     @Mock
-    private AccountRecordsApi accounts;
+    private AccountRecordsControllerApi accounts;
     @Mock
     private PaymentRecordsApi payments;
 
@@ -49,14 +52,14 @@ class DomainInstructionClientTest {
         UUID runId = UUID.randomUUID();
         UUID scheduleId = UUID.randomUUID();
         UUID creditorId = UUID.randomUUID();
-        when(accounts.servicingMandate(accountId, mandateId)).thenReturn(Mono.just(
-                new AccountRecordsApi.MandateView(mandateId, accountId, partyId, "OPERATOR", true)));
-        when(payments.standingOrder(runId)).thenReturn(Mono.just(
-                new PaymentRecordsApi.StandingOrderView(runId, scheduleId, new BigDecimal("25.00"), "GBP",
-                        LocalDate.of(2026, 10, 21))));
-        when(payments.directDebit(mandateId)).thenReturn(Mono.just(
-                new PaymentRecordsApi.DirectDebitView(mandateId, accountId, creditorId, "ACTIVE",
-                        new BigDecimal("100.00"), "GBP", "MANDATE-1")));
+        when(accounts.servicingMandate1(accountId, mandateId, null)).thenReturn(Mono.just(
+                new MandateView().id(mandateId).accountId(accountId).partyId(partyId).role("OPERATOR").active(true)));
+        when(payments.readStandingOrder(runId)).thenReturn(Mono.just(
+                new StandingOrderView().id(runId).paymentScheduleId(scheduleId).amount(new BigDecimal("25.00"))
+                        .currency("GBP").valueDate(LocalDate.of(2026, 10, 21))));
+        when(payments.readDirectDebit(mandateId)).thenReturn(Mono.just(
+                new DirectDebitView().id(mandateId).debtorAccountId(accountId).creditorPartyId(creditorId)
+                        .status("ACTIVE").amountLimit(new BigDecimal("100.00")).currency("GBP").reference("MANDATE-1")));
 
         DomainInstructionClient client = new DomainInstructionClient(accounts, payments);
         InstructionPort.Mandate mandate = client.mandate(accountId, mandateId).block();
@@ -66,8 +69,8 @@ class DomainInstructionClientTest {
         assertThat(mandate.role()).isEqualTo("OPERATOR");
         assertThat(order.amount()).isEqualByComparingTo("25.00");
         assertThat(debit.reference()).isEqualTo("MANDATE-1");
-        verify(accounts).servicingMandate(accountId, mandateId);
-        verify(payments).standingOrder(runId);
-        verify(payments).directDebit(mandateId);
+        verify(accounts).servicingMandate1(accountId, mandateId, null);
+        verify(payments).readStandingOrder(runId);
+        verify(payments).readDirectDebit(mandateId);
     }
 }
