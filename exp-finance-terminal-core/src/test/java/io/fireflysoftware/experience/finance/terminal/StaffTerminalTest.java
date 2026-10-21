@@ -194,7 +194,7 @@ class StaffTerminalTest {
         private final AccessPort delegate;
 
         private WebClientAccess(String baseUrl) {
-            delegate = new HttpAccessAdapter(org.springframework.web.reactive.function.client.WebClient.builder().baseUrl(baseUrl).build());
+            delegate = HttpAccessAdapter.at(baseUrl);
         }
 
         @Override
