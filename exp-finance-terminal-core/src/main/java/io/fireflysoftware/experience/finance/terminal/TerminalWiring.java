@@ -23,7 +23,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountBackofficeApi;
 import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountHoldersApi;
@@ -33,6 +32,9 @@ import io.fireflysoftware.domain.banking.cards.sdk.api.CardBackofficeApi;
 import io.fireflysoftware.domain.banking.cards.sdk.api.CardsApi;
 import io.fireflysoftware.domain.configuration.sdk.api.EnvironmentConfigApi;
 import io.fireflysoftware.domain.configuration.sdk.invoker.ApiClient;
+import io.fireflysoftware.domain.distributor.branding.sdk.api.AgencyApi;
+import io.fireflysoftware.domain.distributor.branding.sdk.api.AgentApi;
+import io.fireflysoftware.domain.distributor.branding.sdk.api.DistributorQueryApi;
 import io.fireflysoftware.domain.lending.collateral.sdk.api.CollateralCasesApi;
 import io.fireflysoftware.domain.lending.collections.sdk.api.CollectionCasesApi;
 import io.fireflysoftware.domain.lending.compliance.sdk.api.AmlCasesApi;
@@ -55,11 +57,6 @@ import java.util.Set;
 @Configuration
 @EnableConfigurationProperties(TerminalWiring.TerminalLocations.class)
 public class TerminalWiring {
-
-    @Bean
-    public WebClient terminalWebClient() {
-        return WebClient.builder().build();
-    }
 
     @Bean
     public IdentityPort identityPort(
@@ -143,8 +140,15 @@ public class TerminalWiring {
 
     @Bean
     @ConditionalOnProperty(prefix = "firefly.terminal", name = "adapter", havingValue = "domain")
-    public DistributorPort domainDistributorPort(WebClient terminalWebClient, ConfigurationPort configurationPort, TerminalLocations locations) {
-        return new DomainDistributorClient(terminalWebClient, configurationPort, locations.getDistributorBaseUrl(), FinanceArea.ACCOUNT.channelKey());
+    public DistributorPort domainDistributorPort(ConfigurationPort configurationPort, TerminalLocations locations) {
+        io.fireflysoftware.domain.distributor.branding.sdk.invoker.ApiClient distributors =
+                new io.fireflysoftware.domain.distributor.branding.sdk.invoker.ApiClient();
+        distributors.setBasePath(trim(locations.getDistributorBaseUrl()));
+        return new DomainDistributorClient(configurationPort,
+                new DistributorQueryApi(distributors),
+                new AgencyApi(distributors),
+                new AgentApi(distributors),
+                FinanceArea.ACCOUNT.channelKey());
     }
 
     @Bean
@@ -237,6 +241,13 @@ public class TerminalWiring {
         public void setDomains(Map<String, String> domains) {
             this.domains = domains;
         }
+    }
+
+    private static String trim(String url) {
+        if (url == null || url.isBlank()) {
+            throw new TerminalDeniedException("PROPERTY_NOT_SET");
+        }
+        return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
 
     private static String domainUrl(Map<String, String> domains, String key) {

@@ -17,13 +17,18 @@
 
 package io.fireflysoftware.experience.finance.terminal;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import org.springframework.web.reactive.function.client.WebClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.fireflysoftware.domain.distributor.branding.sdk.api.AgencyApi;
+import io.fireflysoftware.domain.distributor.branding.sdk.api.AgentApi;
+import io.fireflysoftware.domain.distributor.branding.sdk.api.DistributorQueryApi;
+import io.fireflysoftware.domain.distributor.branding.sdk.model.DistributorDTO;
+import io.fireflysoftware.domain.distributor.branding.sdk.model.PaginationResponse;
+import io.fireflysoftware.domain.distributor.branding.sdk.model.RegisterDistributorAuditLogCommand;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -31,110 +36,127 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Lists distributors, agencies, and agents from core-common-distributor-mgmt and records
- * an attachment in the distributor audit log. Existing distributor tables are left in place.
+ * Lists distributors, agencies, and agents through domain-distributor-branding
+ * and records an attachment in that domain's audit log.
+ * The view is read back from the domain after the audit row is stored.
  */
 public final class DomainDistributorClient implements DistributorPort {
 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Set<String> ROLES = Set.of("BROKER", "AGENCY", "COLLABORATOR");
 
-    private final WebClient webClient;
+    private final DistributorQueryApi distributors;
+    private final AgencyApi agencies;
+    private final AgentApi agents;
     private final ConfigurationPort configuration;
-    private final String distributorBaseUrl;
     private final String channelKey;
 
-    public DomainDistributorClient(WebClient webClient, ConfigurationPort configuration, String distributorBaseUrl, String channelKey) {
-        this.webClient = webClient;
+    public DomainDistributorClient(ConfigurationPort configuration,
+                                   DistributorQueryApi distributors,
+                                   AgencyApi agencies,
+                                   AgentApi agents,
+                                   String channelKey) {
         this.configuration = configuration;
-        this.distributorBaseUrl = trim(distributorBaseUrl);
+        this.distributors = distributors;
+        this.agencies = agencies;
+        this.agents = agents;
         this.channelKey = channelKey;
     }
 
     @Override
     public Flux<DistributorView> list() {
-        return configuration.getRequired(channelKey).flatMapMany(channel -> webClient.post()
-                .uri(distributorBaseUrl + "/api/v1/distributors/filter")
-                .bodyValue(Map.of())
-                .exchangeToMono(JsonResponses::body)
-                .flatMapMany(body -> Flux.fromIterable(items(body)))
-                .concatMap(item -> toView(item, channel)));
+        return configuration.getRequired(channelKey).flatMapMany(channel -> distributors
+                .filterDistributors(key())
+                .flatMapMany(page -> Flux.fromIterable(content(page)))
+                .concatMap(item -> toView(distributor(item), channel)));
     }
 
     @Override
     public Mono<DistributorView> link(DistributorLink link) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("distributorId", link.distributorId().toString());
-        body.put("action", "UPDATED");
-        body.put("entity", "STAFF_RECORD");
-        body.put("entityId", link.recordId().toString());
-        body.put("auditMetadata", "party=" + link.customerPartyId()
+        RegisterDistributorAuditLogCommand entry = new RegisterDistributorAuditLogCommand();
+        entry.setDistributorId(link.distributorId());
+        entry.setAction(RegisterDistributorAuditLogCommand.ActionEnum.UPDATED);
+        entry.setEntity("STAFF_RECORD");
+        entry.setEntityId(link.recordId().toString());
+        entry.setAuditMetadata("party=" + link.customerPartyId()
                 + ";channel=" + link.channel()
                 + ";collaborator=" + link.collaboratorId()
                 + ";actor=" + link.employeeId()
                 + ";area=" + link.area());
-        body.put("userId", link.employeeId().toString());
-        body.put("auditTimestamp", LocalDateTime.now().toString());
-        return webClient.post()
-                .uri(distributorBaseUrl + "/api/v1/distributors/" + link.distributorId() + "/audit-logs")
-                .bodyValue(body)
-                .exchangeToMono(JsonResponses::body)
-                .then(Mono.just(new DistributorView(link.distributorId(), "", "DISTRIBUTOR", link.customerPartyId(),
-                        link.channel(), null, link.collaboratorId())));
-    }
-
-    private Mono<DistributorView> toView(JsonNode item, String channel) {
-        UUID id = UUID.fromString(item.path("id").asText());
-        String externalCode = item.path("externalCode").asText("");
-        String role = ROLES.contains(externalCode.toUpperCase(Locale.ROOT)) ? externalCode.toUpperCase(Locale.ROOT) : "DISTRIBUTOR";
-        UUID partyId = uuidOrNull(item.path("partyId").asText(""));
-        return firstId(distributorBaseUrl + "/api/v1/distributors/" + id + "/agencies/filter")
-                .zipWith(firstId(distributorBaseUrl + "/api/v1/distributors/" + id + "/agents/filter"))
-                .map(pair -> new DistributorView(id, item.path("name").asText(""), role, partyId, channel,
-                        pair.getT1().orElse(null), pair.getT2().orElse(null)));
-    }
-
-    private Mono<Optional<UUID>> firstId(String uri) {
-        return webClient.post()
-                .uri(uri)
-                .bodyValue(Map.of())
-                .exchangeToMono(JsonResponses::body)
-                .map(body -> {
-                    for (JsonNode node : items(body)) {
-                        String id = node.path("id").asText("");
-                        if (!id.isBlank()) {
-                            return Optional.of(UUID.fromString(id));
-                        }
+        entry.setUserId(link.employeeId());
+        entry.setAuditTimestamp(LocalDateTime.now().withNano(0));
+        return distributors.recordAuditLog(link.distributorId(), entry, key())
+                .flatMap(saved -> {
+                    Object id = saved == null ? null : saved.get("id");
+                    if (id == null || id.toString().isBlank()) {
+                        return Mono.error(new IllegalStateException("Distributor audit log was not recorded"));
                     }
-                    return Optional.<UUID>empty();
+                    return configuration.getRequired(channelKey)
+                            .flatMap(channel -> distributors.getDistributorProfile(link.distributorId(), key())
+                                    .flatMap(profile -> toView(profile, channel)));
                 });
     }
 
-    private static Iterable<JsonNode> items(JsonNode body) {
-        if (body == null || body.isNull()) {
-            return java.util.List.of();
+    private Mono<DistributorView> toView(DistributorDTO item, String channel) {
+        if (item == null || item.getId() == null) {
+            return Mono.error(new IllegalStateException("Distributor id was not recorded"));
         }
-        if (body.isArray()) {
-            return body;
-        }
-        for (String field : new String[]{"content", "items", "data", "results"}) {
-            if (body.path(field).isArray()) {
-                return body.path(field);
+        UUID id = item.getId();
+        String externalCode = item.getExternalCode() == null ? "" : item.getExternalCode();
+        String role = ROLES.contains(externalCode.toUpperCase(Locale.ROOT)) ? externalCode.toUpperCase(Locale.ROOT) : "DISTRIBUTOR";
+        String name = item.getName() == null ? "" : item.getName();
+        return firstId(agencies.listAgencies(id, key()))
+                .zipWith(firstId(agents.listAgents(id, key())))
+                .map(pair -> new DistributorView(id, name, role, null, channel,
+                        pair.getT1().orElse(null), pair.getT2().orElse(null)));
+    }
+
+    private static Mono<Optional<UUID>> firstId(Mono<PaginationResponse> page) {
+        return page.map(DomainDistributorClient::firstId).defaultIfEmpty(Optional.empty());
+    }
+
+    private static Optional<UUID> firstId(PaginationResponse page) {
+        for (Object item : content(page)) {
+            UUID id = idOf(item);
+            if (id != null) {
+                return Optional.of(id);
             }
         }
-        return java.util.List.of();
+        return Optional.empty();
     }
 
-    private static UUID uuidOrNull(String text) {
-        if (text == null || text.isBlank()) {
+    private static List<Object> content(PaginationResponse page) {
+        if (page == null || page.getContent() == null) {
+            return List.of();
+        }
+        return page.getContent();
+    }
+
+    private static DistributorDTO distributor(Object item) {
+        if (item instanceof DistributorDTO dto) {
+            return dto;
+        }
+        return MAPPER.convertValue(item, DistributorDTO.class);
+    }
+
+    private static UUID idOf(Object item) {
+        Object raw = null;
+        if (item instanceof Map<?, ?> map) {
+            raw = map.get("id");
+        } else if (item != null) {
+            try {
+                raw = item.getClass().getMethod("getId").invoke(item);
+            } catch (ReflectiveOperationException ignored) {
+                raw = null;
+            }
+        }
+        if (raw == null || raw.toString().isBlank()) {
             return null;
         }
-        return UUID.fromString(text);
+        return UUID.fromString(raw.toString());
     }
 
-    private static String trim(String url) {
-        if (url == null || url.isBlank()) {
-            throw new TerminalDeniedException("PROPERTY_NOT_SET");
-        }
-        return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
+    private static String key() {
+        return UUID.randomUUID().toString();
     }
 }
