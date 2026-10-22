@@ -25,14 +25,28 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountBackofficeApi;
+import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountHoldersApi;
 import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountRecordsControllerApi;
+import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountsApi;
+import io.fireflysoftware.domain.banking.cards.sdk.api.CardBackofficeApi;
+import io.fireflysoftware.domain.banking.cards.sdk.api.CardsApi;
 import io.fireflysoftware.domain.configuration.sdk.api.EnvironmentConfigApi;
 import io.fireflysoftware.domain.configuration.sdk.invoker.ApiClient;
+import io.fireflysoftware.domain.lending.collateral.sdk.api.CollateralCasesApi;
+import io.fireflysoftware.domain.lending.collections.sdk.api.CollectionCasesApi;
+import io.fireflysoftware.domain.lending.compliance.sdk.api.AmlCasesApi;
+import io.fireflysoftware.domain.lending.loan.origination.sdk.api.LoanOriginationApi;
+import io.fireflysoftware.domain.lending.mortgage.sdk.api.MortgageAgreementsApi;
+import io.fireflysoftware.domain.lending.provisioning.sdk.api.ProvisioningCasesApi;
+import io.fireflysoftware.domain.lending.supplychainfinance.sdk.api.SupplyChainFinanceAgreementsApi;
 import io.fireflysoftware.domain.payments.sdk.api.PaymentRecordsApi;
 import io.fireflysoftware.domain.referencedata.sdk.api.MastersApi;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Wires staff identity and access to domain-core-security-center.
@@ -100,8 +114,31 @@ public class TerminalWiring {
 
     @Bean
     @ConditionalOnProperty(prefix = "firefly.terminal", name = "adapter", havingValue = "domain")
-    public StaffRecordPort domainRecordPort(WebClient terminalWebClient, ConfigurationPort configurationPort, TerminalLocations locations) {
-        return new DomainRecordClient(terminalWebClient, configurationPort, locations.getDomains());
+    public StaffRecordPort domainRecordPort(ConfigurationPort configurationPort, TerminalLocations locations) {
+        Map<String, String> domains = locations.getDomains();
+        Set<String> configured = new LinkedHashSet<>();
+        domains.forEach((key, value) -> {
+            if (value != null && !value.isBlank()) {
+                configured.add(key);
+            }
+        });
+        io.fireflysoftware.domain.banking.accounts.sdk.invoker.ApiClient accounts = accountsClient(domains, "accounts");
+        io.fireflysoftware.domain.banking.cards.sdk.invoker.ApiClient cards = cardsClient(domains, "cards");
+        io.fireflysoftware.domain.lending.loan.origination.sdk.invoker.ApiClient loans =
+                loanClient(domains, "lending-applications");
+        return new DomainRecordClient(configurationPort, configured,
+                new AccountBackofficeApi(accounts),
+                new AccountHoldersApi(accounts),
+                new AccountsApi(accounts),
+                new CardBackofficeApi(cards),
+                new CardsApi(cards),
+                new LoanOriginationApi(loans),
+                new MortgageAgreementsApi(mortgageClient(domains, "mortgage-agreements")),
+                new SupplyChainFinanceAgreementsApi(supplyChainClient(domains, "supply-chain-finance-agreements")),
+                new CollateralCasesApi(collateralClient(domains, "collateral-cases")),
+                new CollectionCasesApi(collectionsClient(domains, "collection-cases")),
+                new ProvisioningCasesApi(provisioningClient(domains, "provisioning-cases")),
+                new AmlCasesApi(amlClient(domains, "aml-cases")));
     }
 
     @Bean
@@ -200,5 +237,76 @@ public class TerminalWiring {
         public void setDomains(Map<String, String> domains) {
             this.domains = domains;
         }
+    }
+
+    private static String domainUrl(Map<String, String> domains, String key) {
+        String url = domains.get(key);
+        if (url == null || url.isBlank()) {
+            return "http://127.0.0.1";
+        }
+        return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
+    }
+
+    private static io.fireflysoftware.domain.banking.accounts.sdk.invoker.ApiClient accountsClient(Map<String, String> domains, String key) {
+        io.fireflysoftware.domain.banking.accounts.sdk.invoker.ApiClient client =
+                new io.fireflysoftware.domain.banking.accounts.sdk.invoker.ApiClient();
+        client.setBasePath(domainUrl(domains, key));
+        return client;
+    }
+
+    private static io.fireflysoftware.domain.banking.cards.sdk.invoker.ApiClient cardsClient(Map<String, String> domains, String key) {
+        io.fireflysoftware.domain.banking.cards.sdk.invoker.ApiClient client =
+                new io.fireflysoftware.domain.banking.cards.sdk.invoker.ApiClient();
+        client.setBasePath(domainUrl(domains, key));
+        return client;
+    }
+
+    private static io.fireflysoftware.domain.lending.loan.origination.sdk.invoker.ApiClient loanClient(Map<String, String> domains, String key) {
+        io.fireflysoftware.domain.lending.loan.origination.sdk.invoker.ApiClient client =
+                new io.fireflysoftware.domain.lending.loan.origination.sdk.invoker.ApiClient();
+        client.setBasePath(domainUrl(domains, key));
+        return client;
+    }
+
+    private static io.fireflysoftware.domain.lending.mortgage.sdk.invoker.ApiClient mortgageClient(Map<String, String> domains, String key) {
+        io.fireflysoftware.domain.lending.mortgage.sdk.invoker.ApiClient client =
+                new io.fireflysoftware.domain.lending.mortgage.sdk.invoker.ApiClient();
+        client.setBasePath(domainUrl(domains, key));
+        return client;
+    }
+
+    private static io.fireflysoftware.domain.lending.supplychainfinance.sdk.invoker.ApiClient supplyChainClient(Map<String, String> domains, String key) {
+        io.fireflysoftware.domain.lending.supplychainfinance.sdk.invoker.ApiClient client =
+                new io.fireflysoftware.domain.lending.supplychainfinance.sdk.invoker.ApiClient();
+        client.setBasePath(domainUrl(domains, key));
+        return client;
+    }
+
+    private static io.fireflysoftware.domain.lending.collateral.sdk.invoker.ApiClient collateralClient(Map<String, String> domains, String key) {
+        io.fireflysoftware.domain.lending.collateral.sdk.invoker.ApiClient client =
+                new io.fireflysoftware.domain.lending.collateral.sdk.invoker.ApiClient();
+        client.setBasePath(domainUrl(domains, key));
+        return client;
+    }
+
+    private static io.fireflysoftware.domain.lending.collections.sdk.invoker.ApiClient collectionsClient(Map<String, String> domains, String key) {
+        io.fireflysoftware.domain.lending.collections.sdk.invoker.ApiClient client =
+                new io.fireflysoftware.domain.lending.collections.sdk.invoker.ApiClient();
+        client.setBasePath(domainUrl(domains, key));
+        return client;
+    }
+
+    private static io.fireflysoftware.domain.lending.provisioning.sdk.invoker.ApiClient provisioningClient(Map<String, String> domains, String key) {
+        io.fireflysoftware.domain.lending.provisioning.sdk.invoker.ApiClient client =
+                new io.fireflysoftware.domain.lending.provisioning.sdk.invoker.ApiClient();
+        client.setBasePath(domainUrl(domains, key));
+        return client;
+    }
+
+    private static io.fireflysoftware.domain.lending.compliance.sdk.invoker.ApiClient amlClient(Map<String, String> domains, String key) {
+        io.fireflysoftware.domain.lending.compliance.sdk.invoker.ApiClient client =
+                new io.fireflysoftware.domain.lending.compliance.sdk.invoker.ApiClient();
+        client.setBasePath(domainUrl(domains, key));
+        return client;
     }
 }

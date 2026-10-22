@@ -17,35 +17,90 @@
 
 package io.fireflysoftware.experience.finance.terminal;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import org.springframework.web.reactive.function.client.WebClient;
+import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountBackofficeApi;
+import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountHoldersApi;
+import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountsApi;
+import io.fireflysoftware.domain.banking.accounts.sdk.model.AccountDTO;
+import io.fireflysoftware.domain.banking.accounts.sdk.model.AddAccountHolderCommand;
+import io.fireflysoftware.domain.banking.cards.sdk.api.CardBackofficeApi;
+import io.fireflysoftware.domain.banking.cards.sdk.api.CardsApi;
+import io.fireflysoftware.domain.banking.cards.sdk.model.CardDTO;
+import io.fireflysoftware.domain.banking.cards.sdk.model.UpdateSecuritySettingsRequest;
+import io.fireflysoftware.domain.lending.collateral.sdk.api.CollateralCasesApi;
+import io.fireflysoftware.domain.lending.collateral.sdk.model.CollateralCaseDTO;
+import io.fireflysoftware.domain.lending.collections.sdk.api.CollectionCasesApi;
+import io.fireflysoftware.domain.lending.collections.sdk.model.CollectionCaseDTO;
+import io.fireflysoftware.domain.lending.compliance.sdk.api.AmlCasesApi;
+import io.fireflysoftware.domain.lending.compliance.sdk.model.AmlCaseDTO;
+import io.fireflysoftware.domain.lending.loan.origination.sdk.api.LoanOriginationApi;
+import io.fireflysoftware.domain.lending.loan.origination.sdk.model.ApplicationPartyDTO;
+import io.fireflysoftware.domain.lending.loan.origination.sdk.model.LoanApplicationDTO;
+import io.fireflysoftware.domain.lending.loan.origination.sdk.model.UpdateApplicationEmploymentDataCommand;
+import io.fireflysoftware.domain.lending.mortgage.sdk.api.MortgageAgreementsApi;
+import io.fireflysoftware.domain.lending.mortgage.sdk.model.MortgageAgreementDTO;
+import io.fireflysoftware.domain.lending.provisioning.sdk.api.ProvisioningCasesApi;
+import io.fireflysoftware.domain.lending.provisioning.sdk.model.ProvisioningCaseDTO;
+import io.fireflysoftware.domain.lending.supplychainfinance.sdk.api.SupplyChainFinanceAgreementsApi;
+import io.fireflysoftware.domain.lending.supplychainfinance.sdk.model.SupplyChainFinanceAgreementDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
- * Calls the domain HTTP APIs. Core SDKs are not on this classpath.
- * Replace {@link SandboxRecordBook} with this class by setting {@code firefly.terminal.adapter=domain}.
+ * Staff records go through the generated domain SDKs. Each domain reads and writes its core.
  */
 public final class DomainRecordClient implements StaffRecordPort {
 
-    private final WebClient webClient;
     private final ConfigurationPort configuration;
-    private final Map<String, String> domainBaseUrls;
+    private final Set<String> configuredDomains;
+    private final AccountBackofficeApi accountBackoffice;
+    private final AccountHoldersApi accountHolders;
+    private final AccountsApi accounts;
+    private final CardBackofficeApi cardBackoffice;
+    private final CardsApi cards;
+    private final LoanOriginationApi loans;
+    private final MortgageAgreementsApi mortgages;
+    private final SupplyChainFinanceAgreementsApi supplyChain;
+    private final CollateralCasesApi collateral;
+    private final CollectionCasesApi collections;
+    private final ProvisioningCasesApi provisioning;
+    private final AmlCasesApi aml;
 
-    public DomainRecordClient(WebClient webClient, ConfigurationPort configuration, Map<String, String> domainBaseUrls) {
-        this.webClient = webClient;
+    public DomainRecordClient(ConfigurationPort configuration,
+                              Set<String> configuredDomains,
+                              AccountBackofficeApi accountBackoffice,
+                              AccountHoldersApi accountHolders,
+                              AccountsApi accounts,
+                              CardBackofficeApi cardBackoffice,
+                              CardsApi cards,
+                              LoanOriginationApi loans,
+                              MortgageAgreementsApi mortgages,
+                              SupplyChainFinanceAgreementsApi supplyChain,
+                              CollateralCasesApi collateral,
+                              CollectionCasesApi collections,
+                              ProvisioningCasesApi provisioning,
+                              AmlCasesApi aml) {
         this.configuration = configuration;
-        this.domainBaseUrls = Map.copyOf(domainBaseUrls);
+        this.configuredDomains = Set.copyOf(configuredDomains);
+        this.accountBackoffice = accountBackoffice;
+        this.accountHolders = accountHolders;
+        this.accounts = accounts;
+        this.cardBackoffice = cardBackoffice;
+        this.cards = cards;
+        this.loans = loans;
+        this.mortgages = mortgages;
+        this.supplyChain = supplyChain;
+        this.collateral = collateral;
+        this.collections = collections;
+        this.provisioning = provisioning;
+        this.aml = aml;
     }
 
     @Override
     public Flux<StaffRecord> list(StaffArea area) {
+        require(area);
         return configuration.getRequired(area.recordIndexKey())
                 .flatMapMany(csv -> Flux.fromArray(csv.split(",")))
                 .map(String::trim)
@@ -55,67 +110,76 @@ public final class DomainRecordClient implements StaffRecordPort {
 
     @Override
     public Mono<StaffRecord> get(StaffArea area, UUID recordId) {
-        return exchange("GET", base(area) + area.itemPath(recordId), null)
-                .map(body -> toRecord(area, recordId, body, null));
+        require(area);
+        return switch ((FinanceArea) area) {
+            case ACCOUNT -> accountBackoffice.getAccount(recordId, key())
+                    .map(account -> fromAccount(area, recordId, account, null));
+            case CARD -> cardBackoffice.getCard(recordId, key())
+                    .map(card -> fromCard(area, recordId, card, null));
+            case LENDING_APPLICATION -> loans.getApplication(recordId, key())
+                    .map(application -> fromLoan(area, recordId, application, null));
+            case MORTGAGE_AGREEMENT -> mortgages.get(recordId, key())
+                    .map(agreement -> fromMortgage(area, recordId, agreement, null));
+            case SUPPLY_CHAIN_FINANCE_AGREEMENT -> supplyChain.get(recordId, key())
+                    .map(agreement -> fromSupplyChain(area, recordId, agreement, null));
+            case COLLATERAL_CASE -> collateral.get(recordId, key())
+                    .map(row -> fromCollateral(area, recordId, row, null));
+            case COLLECTION_CASE -> collections.get(recordId, key())
+                    .map(row -> fromCollection(area, recordId, row, null));
+            case PROVISIONING_CASE -> provisioning.get(recordId, key())
+                    .map(row -> fromProvisioning(area, recordId, row, null));
+            case AML_CASE -> aml.get(recordId, key())
+                    .map(row -> fromAml(area, recordId, row, null));
+        };
     }
 
     @Override
     public Mono<StaffRecord> update(RecordCommand command) {
-        StaffArea area = command.area();
-        String base = base(area);
+        require(command.area());
+        FinanceArea area = (FinanceArea) command.area();
         return switch (area.updateMode()) {
-            case PUT_DOCUMENT -> getNode(area, command.recordId()).flatMap(current -> {
-                Map<String, Object> body = document(current, command);
-                return exchange("PUT", base + area.itemPath(command.recordId()), body)
-                        .map(written -> toRecord(area, command.recordId(), written, command));
-            });
+            case PUT_DOCUMENT -> putDocument(area, command);
             case ADD_HOLDER -> configuration.getRequired(area.holderRoleKey()).flatMap(roleId -> {
-                Map<String, String> body = new LinkedHashMap<>();
-                body.put("accountId", command.recordId().toString());
-                body.put("partyId", command.customerPartyId().toString());
-                body.put("roleInContractId", roleId);
-                return exchange("POST", base + "/api/v1/accounts/" + command.recordId() + "/holders", body)
-                        .then(get(area, command.recordId()))
-                        .map(record -> record.withUpdate(command));
+                AddAccountHolderCommand body = new AddAccountHolderCommand()
+                        .accountId(command.recordId())
+                        .partyId(command.customerPartyId())
+                        .roleInContractId(UUID.fromString(roleId));
+                return accountHolders.addHolder(command.recordId(), body, key())
+                        .then(accountBackoffice.getAccount(command.recordId(), key()))
+                        .map(account -> fromAccount(area, command.recordId(), account, command));
             });
             case CARD_SECURITY -> configuration.getRequired(area.cardSecurityKey()).flatMap(settingId -> {
-                Map<String, Object> body = new LinkedHashMap<>();
-                body.put("securitySettingId", settingId);
-                body.put("enabled", true);
-                return exchange("PUT", base + "/api/v1/backoffice/cards/" + command.recordId() + "/security", body)
-                        .then(get(area, command.recordId()))
-                        .map(record -> record.withUpdate(command));
+                UpdateSecuritySettingsRequest body = new UpdateSecuritySettingsRequest()
+                        .securitySettingId(UUID.fromString(settingId))
+                        .enabled(true);
+                return cardBackoffice.updateSecurity(command.recordId(), body, key())
+                        .then(cardBackoffice.getCard(command.recordId(), key()))
+                        .map(card -> fromCard(area, command.recordId(), card, command));
             });
             case EMPLOYMENT -> {
-                Map<String, String> body = new LinkedHashMap<>();
-                body.put("applicationId", command.recordId().toString());
-                body.put("employer", command.note() == null ? "" : command.note());
-                yield exchange("PATCH", base + area.itemPath(command.recordId()) + "/employment-data", body)
-                        .then(Mono.fromSupplier(() -> new StaffRecord(command.recordId(), area.name(),
-                                command.customerPartyId(), command.actorId(), "OPEN", command.note(),
-                                command.distributorId(), command.note())));
+                UpdateApplicationEmploymentDataCommand body = new UpdateApplicationEmploymentDataCommand()
+                        .applicationId(command.recordId())
+                        .employer(command.note() == null ? "" : command.note());
+                yield loans.updateApplicationEmploymentData(command.recordId(), body, key())
+                        .map(party -> fromEmployment(area, command, party));
             }
         };
     }
 
     @Override
     public Mono<StaffRecord> close(RecordCommand command) {
-        StaffArea area = command.area();
-        String base = base(area);
+        require(command.area());
+        FinanceArea area = (FinanceArea) command.area();
         String reason = command.reason() == null ? "" : command.reason();
-        Mono<JsonNode> call = switch (area.closeMode()) {
-            case JSON_SUFFIX -> {
-                Map<String, String> body = Map.of("statusReason", reason, "status", command.status() == null ? "" : command.status());
-                yield exchange("POST", base + area.itemPath(command.recordId()) + "/" + area.closeSuffix(), body);
-            }
-            case ACCOUNT_QUERY -> exchange("POST", base + "/api/v1/accounts/" + command.recordId()
-                    + "/close?reason=" + encode(reason), Map.of());
-            case CARD_CANCEL -> exchange("POST", base + "/api/v1/cards/" + command.recordId()
-                    + "/cancel?reason=" + encode(reason) + "&cancelledBy=" + encode(command.actorId().toString()), Map.of());
-            case APPLICATION_WITHDRAW -> exchange("POST", base + "/api/v1/loan-applications/" + command.recordId() + "/withdraw", Map.of());
+        return switch (area.closeMode()) {
+            case JSON_SUFFIX -> closeDocument(area, command, reason);
+            case ACCOUNT_QUERY -> accounts.closeAccount(command.recordId(), reason, key())
+                    .thenReturn(closed(command));
+            case CARD_CANCEL -> cards.cancelCard(command.recordId(), reason, command.actorId().toString(), key())
+                    .thenReturn(closed(command));
+            case APPLICATION_WITHDRAW -> loans.withdrawApplication(command.recordId(), key())
+                    .thenReturn(closed(command));
         };
-        return call.then(Mono.fromSupplier(() -> new StaffRecord(command.recordId(), area.name(),
-                command.customerPartyId(), command.actorId(), command.status(), reason, command.distributorId(), command.note())));
     }
 
     @Override
@@ -123,16 +187,13 @@ public final class DomainRecordClient implements StaffRecordPort {
         if (!command.area().draftRemoval()) {
             return Mono.error(new TerminalDeniedException("REMOVAL_NOT_APPLICABLE"));
         }
-        return getNode(command.area(), command.recordId()).flatMap(current -> {
-            String status = firstText(current, "status", "agreementStatus", "policyStatus");
-            if (status.isBlank()) {
-                status = "DRAFT";
-            }
-            if (!requiredStatus.equals(status)) {
+        require(command.area());
+        return statusOf(command.area(), command.recordId()).flatMap(status -> {
+            String current = status.isBlank() ? "DRAFT" : status;
+            if (!requiredStatus.equals(current)) {
                 return Mono.error(new TerminalDeniedException("DRAFT_REQUIRED"));
             }
-            return exchange("DELETE", base(command.area()) + command.area().itemPath(command.recordId()), null)
-                    .then();
+            return supplyChain.remove(command.recordId(), key());
         });
     }
 
@@ -141,103 +202,208 @@ public final class DomainRecordClient implements StaffRecordPort {
         if (command.area().decideMode() == DecideMode.NONE) {
             return Mono.error(new TerminalDeniedException("DECISION_NOT_APPLICABLE"));
         }
-        String suffix = switch (command.area().decideMode()) {
-            case APPROVE_OR_REJECT -> "APPROVE".equalsIgnoreCase(command.decision()) ? "approve" : "reject";
-            case DENY -> "deny";
-            case DECLINE -> "decline";
-            case NONE -> "";
-        };
+        require(command.area());
+        if (command.area().decideMode() != DecideMode.APPROVE_OR_REJECT) {
+            return Mono.error(new TerminalDeniedException("DECISION_NOT_APPLICABLE"));
+        }
+        Mono<?> call = "APPROVE".equalsIgnoreCase(command.decision())
+                ? loans.approveApplication(command.recordId(), key())
+                : loans.rejectApplication(command.recordId(), key());
         String status = SandboxRecordBook.decisionStatus(command);
-        Map<String, String> body = Map.of("statusReason", command.reason() == null ? "" : command.reason());
-        return exchange("POST", base(command.area()) + command.area().itemPath(command.recordId()) + "/" + suffix, body)
-                .then(Mono.fromSupplier(() -> new StaffRecord(command.recordId(), command.area().name(),
-                        command.customerPartyId(), command.actorId(), status, command.reason(),
-                        command.distributorId(), command.note())));
+        return call.thenReturn(new StaffRecord(command.recordId(), command.area().name(),
+                command.customerPartyId(), command.actorId(), status, command.reason(),
+                command.distributorId(), command.note()));
     }
 
-    private Mono<JsonNode> getNode(StaffArea area, UUID recordId) {
-        return exchange("GET", base(area) + area.itemPath(recordId), null);
+    private Mono<StaffRecord> putDocument(FinanceArea area, RecordCommand command) {
+        UUID id = command.recordId();
+        return switch (area) {
+            case MORTGAGE_AGREEMENT -> mortgages.get(id, key()).flatMap(current -> {
+                if (command.actorId() != null) {
+                    current.setUpdatedBy(command.actorId().toString());
+                }
+                return mortgages.update(id, current, key())
+                        .map(saved -> fromMortgage(area, id, saved, command));
+            });
+            case SUPPLY_CHAIN_FINANCE_AGREEMENT -> supplyChain.get(id, key()).flatMap(current -> {
+                if (command.actorId() != null) {
+                    current.setLastModifiedBy(command.actorId());
+                }
+                if (command.note() != null) {
+                    current.setNotes(command.note());
+                }
+                return supplyChain.update(id, current, key())
+                        .map(saved -> fromSupplyChain(area, id, saved, command));
+            });
+            case COLLATERAL_CASE -> collateral.get(id, key()).flatMap(current -> {
+                if (command.note() != null) {
+                    current.setRemarks(command.note());
+                }
+                return collateral.update(id, current, key())
+                        .map(saved -> fromCollateral(area, id, saved, command));
+            });
+            case COLLECTION_CASE -> collections.get(id, key()).flatMap(current -> {
+                if (command.note() != null) {
+                    current.setRemarks(command.note());
+                }
+                return collections.update(id, current, key())
+                        .map(saved -> fromCollection(area, id, saved, command));
+            });
+            case PROVISIONING_CASE -> provisioning.get(id, key()).flatMap(current -> {
+                if (command.note() != null) {
+                    current.setRemarks(command.note());
+                }
+                return provisioning.update(id, current, key())
+                        .map(saved -> fromProvisioning(area, id, saved, command));
+            });
+            case AML_CASE -> aml.get(id, key()).flatMap(current -> {
+                if (command.customerPartyId() != null) {
+                    current.setCustomerId(command.customerPartyId());
+                }
+                if (command.note() != null) {
+                    current.setNotes(command.note());
+                }
+                return aml.update(id, current, key())
+                        .map(saved -> fromAml(area, id, saved, command));
+            });
+            default -> Mono.error(new TerminalDeniedException("UPDATE_NOT_APPLICABLE"));
+        };
     }
 
-    private Mono<JsonNode> exchange(String method, String uri, Object body) {
-        WebClient.RequestBodyUriSpec spec = webClient.method(org.springframework.http.HttpMethod.valueOf(method));
-        WebClient.RequestHeadersSpec<?> headers = body == null ? spec.uri(uri) : spec.uri(uri).bodyValue(body);
-        return headers.exchangeToMono(response -> {
-            if (response.statusCode().isError()) {
-                return response.createException().flatMap(Mono::error);
+    private Mono<StaffRecord> closeDocument(FinanceArea area, RecordCommand command, String reason) {
+        UUID id = command.recordId();
+        return switch (area) {
+            case MORTGAGE_AGREEMENT -> {
+                var body = new io.fireflysoftware.domain.lending.mortgage.sdk.model.ReasonRequest().statusReason(reason);
+                yield mortgages.close(id, body, key()).map(saved -> fromMortgage(area, id, saved, command));
             }
-            return JsonResponses.body(response);
-        });
+            case SUPPLY_CHAIN_FINANCE_AGREEMENT -> {
+                var body = new io.fireflysoftware.domain.lending.supplychainfinance.sdk.model.ReasonRequest().statusReason(reason);
+                yield supplyChain.close(id, body, key()).map(saved -> fromSupplyChain(area, id, saved, command));
+            }
+            case COLLATERAL_CASE -> {
+                var body = new io.fireflysoftware.domain.lending.collateral.sdk.model.ReasonRequest().statusReason(reason);
+                yield collateral.close(id, body, key()).map(saved -> fromCollateral(area, id, saved, command));
+            }
+            case COLLECTION_CASE -> {
+                var body = new io.fireflysoftware.domain.lending.collections.sdk.model.ReasonRequest().statusReason(reason);
+                yield collections.close(id, body, key()).map(saved -> fromCollection(area, id, saved, command));
+            }
+            case PROVISIONING_CASE -> {
+                var body = new io.fireflysoftware.domain.lending.provisioning.sdk.model.ReasonRequest().statusReason(reason);
+                yield provisioning.close(id, body, key()).map(saved -> fromProvisioning(area, id, saved, command));
+            }
+            case AML_CASE -> {
+                var body = new io.fireflysoftware.domain.lending.compliance.sdk.model.ReasonRequest().statusReason(reason);
+                yield aml.close(id, body, key()).map(saved -> fromAml(area, id, saved, command));
+            }
+            default -> Mono.error(new TerminalDeniedException("CLOSE_NOT_APPLICABLE"));
+        };
     }
 
-    private String base(StaffArea area) {
-        String url = domainBaseUrls.get(area.domainKey());
-        if (url == null || url.isBlank()) {
+    private Mono<String> statusOf(StaffArea area, UUID recordId) {
+        return switch ((FinanceArea) area) {
+            case SUPPLY_CHAIN_FINANCE_AGREEMENT -> supplyChain.get(recordId, key())
+                    .map(row -> code(row.getStatus()));
+            default -> Mono.error(new TerminalDeniedException("REMOVAL_NOT_APPLICABLE"));
+        };
+    }
+
+    private static StaffRecord fromAccount(StaffArea area, UUID id, AccountDTO account, RecordCommand command) {
+        return overlay(area, id, null, null, code(account.getAccountStatus()), account.getAccountNumber(), null, null, command);
+    }
+
+    private static StaffRecord fromCard(StaffArea area, UUID id, CardDTO card, RecordCommand command) {
+        String reference = card.getMaskedCardNumber() == null || card.getMaskedCardNumber().isBlank()
+                ? card.getCardNumber() : card.getMaskedCardNumber();
+        return overlay(area, id, card.getPartyId(), null, code(card.getCardStatus()), reference, null, card.getNotes(), command);
+    }
+
+    private static StaffRecord fromLoan(StaffArea area, UUID id, LoanApplicationDTO application, RecordCommand command) {
+        String reference = application.getApplicationNumber() == null ? "" : application.getApplicationNumber().toString();
+        return overlay(area, id, null, null, "", reference,
+                application.getDistributorId(), application.getNote(), command);
+    }
+
+    private static StaffRecord fromEmployment(StaffArea area, RecordCommand command, ApplicationPartyDTO party) {
+        UUID customer = party.getPartyId() == null ? command.customerPartyId() : party.getPartyId();
+        return new StaffRecord(command.recordId(), area.name(), customer, command.actorId(), "",
+                party.getEmployer(), command.distributorId(), command.note() == null ? party.getEmployer() : command.note());
+    }
+
+    private static StaffRecord fromMortgage(StaffArea area, UUID id, MortgageAgreementDTO agreement, RecordCommand command) {
+        UUID actor = uuidOrNull(agreement.getUpdatedBy());
+        return overlay(area, id, null, actor, code(agreement.getAgreementStatus()), agreement.getDeedNumber(), null, null, command);
+    }
+
+    private static StaffRecord fromSupplyChain(StaffArea area, UUID id, SupplyChainFinanceAgreementDTO agreement, RecordCommand command) {
+        return overlay(area, id, null, agreement.getLastModifiedBy(), code(agreement.getStatus()),
+                agreement.getAgreementNumber(), null, agreement.getNotes(), command);
+    }
+
+    private static StaffRecord fromCollateral(StaffArea area, UUID id, CollateralCaseDTO row, RecordCommand command) {
+        return overlay(area, id, null, null, code(row.getCollateralStatus()), row.getReferenceNumber(), null, row.getRemarks(), command);
+    }
+
+    private static StaffRecord fromCollection(StaffArea area, UUID id, CollectionCaseDTO row, RecordCommand command) {
+        return overlay(area, id, null, null, code(row.getCollectionStatus()), null, null, row.getRemarks(), command);
+    }
+
+    private static StaffRecord fromProvisioning(StaffArea area, UUID id, ProvisioningCaseDTO row, RecordCommand command) {
+        return overlay(area, id, null, null, code(row.getProvisioningStatus()), null, null, row.getRemarks(), command);
+    }
+
+    private static StaffRecord fromAml(StaffArea area, UUID id, AmlCaseDTO row, RecordCommand command) {
+        return overlay(area, id, row.getCustomerId(), null, code(row.getAmlCaseStatus()), null, null, row.getNotes(), command);
+    }
+
+    private static StaffRecord closed(RecordCommand command) {
+        return new StaffRecord(command.recordId(), command.area().name(), command.customerPartyId(), command.actorId(),
+                command.status(), command.reason(), command.distributorId(), command.note());
+    }
+
+    private static StaffRecord overlay(StaffArea area, UUID id, UUID customer, UUID actor, String status,
+                                       String reference, UUID distributor, String note, RecordCommand command) {
+        if (command == null) {
+            return new StaffRecord(id, area.name(), customer, actor, status, reference, distributor, note);
+        }
+        UUID nextDistributor = command.distributorId() != null ? command.distributorId() : distributor;
+        String nextNote = command.note() != null ? command.note() : note;
+        String nextStatus = status == null || status.isBlank() ? command.status() : status;
+        return new StaffRecord(id, area.name(), command.customerPartyId(), command.actorId(), nextStatus, reference,
+                nextDistributor, nextNote);
+    }
+
+    private void require(StaffArea area) {
+        if (!configuredDomains.contains(area.domainKey())) {
             throw new TerminalDeniedException("PROPERTY_NOT_SET");
         }
-        return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
 
-    private static Map<String, Object> document(JsonNode current, RecordCommand command) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        current.fieldNames().forEachRemaining(name -> body.put(name, current.path(name).isContainerNode()
-                ? current.path(name).toString()
-                : current.path(name).asText()));
-        body.put("actorId", command.actorId().toString());
-        body.put("customerPartyId", command.customerPartyId().toString());
-        if (body.containsKey("lastModifiedBy")) {
-            body.put("lastModifiedBy", command.actorId().toString());
+    private static String code(Enum<?> value) {
+        if (value == null) {
+            return "";
         }
-        if (body.containsKey("updatedBy")) {
-            body.put("updatedBy", command.actorId().toString());
+        try {
+            Object coded = value.getClass().getMethod("getValue").invoke(value);
+            return coded == null ? value.name() : coded.toString();
+        } catch (ReflectiveOperationException exception) {
+            return value.name();
         }
-        for (String partyField : new String[]{"partyId", "customerId", "borrowerPartyId", "applicantPartyId"}) {
-            if (body.containsKey(partyField)) {
-                body.put(partyField, command.customerPartyId().toString());
-            }
-        }
-        if (command.note() != null && body.containsKey("notes")) {
-            body.put("notes", command.note());
-        }
-        if (command.distributorId() != null) {
-            body.put("distributorId", command.distributorId().toString());
-        }
-        return body;
-    }
-
-    private static StaffRecord toRecord(StaffArea area, UUID recordId, JsonNode body, RecordCommand command) {
-        UUID customer = command != null ? command.customerPartyId() : uuidOrNull(firstText(body, "customerPartyId", "partyId", "customerId"));
-        UUID actor = command != null ? command.actorId() : uuidOrNull(firstText(body, "actorId", "lastModifiedBy", "updatedBy"));
-        String status = firstText(body, "status", "agreementStatus", "policyStatus", "accountStatus");
-        String reference = firstText(body, "reference", "agreementNumber", "policyNumber", "accountNumber", "notes");
-        UUID distributor = command != null && command.distributorId() != null
-                ? command.distributorId()
-                : uuidOrNull(firstText(body, "distributorId"));
-        String note = command != null && command.note() != null ? command.note() : firstText(body, "notes", "note");
-        return new StaffRecord(recordId, area.name(), customer, actor, status, reference, distributor, note);
     }
 
     private static UUID uuidOrNull(String text) {
         if (text == null || text.isBlank()) {
             return null;
         }
-        return UUID.fromString(text);
+        try {
+            return UUID.fromString(text);
+        } catch (IllegalArgumentException exception) {
+            return null;
+        }
     }
 
-    private static String firstText(JsonNode item, String... names) {
-        if (item == null) {
-            return "";
-        }
-        for (String name : names) {
-            String value = item.path(name).asText("");
-            if (!value.isBlank()) {
-                return value;
-            }
-        }
-        return "";
-    }
-
-    private static String encode(String value) {
-        return URLEncoder.encode(value, StandardCharsets.UTF_8);
+    private static String key() {
+        return UUID.randomUUID().toString();
     }
 }

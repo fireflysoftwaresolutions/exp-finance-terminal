@@ -48,6 +48,46 @@
         </dependency>
         <dependency>
             <groupId>io.fireflysoftware</groupId>
+            <artifactId>domain-banking-cards-sdk</artifactId>
+            <version>26.10.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
+            <artifactId>domain-lending-loan-origination-sdk</artifactId>
+            <version>26.10.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
+            <artifactId>domain-lending-mortgage-sdk</artifactId>
+            <version>26.10.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
+            <artifactId>domain-lending-supply-chain-finance-sdk</artifactId>
+            <version>26.10.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
+            <artifactId>domain-lending-collateral-management-sdk</artifactId>
+            <version>26.10.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
+            <artifactId>domain-lending-delinquency-collections-sdk</artifactId>
+            <version>26.10.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
+            <artifactId>domain-lending-provisioning-risk-sdk</artifactId>
+            <version>26.10.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
+            <artifactId>domain-lending-regulatory-compliance-sdk</artifactId>
+            <version>26.10.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fireflysoftware</groupId>
             <artifactId>domain-core-security-center-sdk</artifactId>
             <version>26.10.5</version>
         </dependency>
