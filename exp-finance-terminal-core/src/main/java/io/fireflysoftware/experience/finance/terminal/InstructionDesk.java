@@ -60,7 +60,10 @@ public final class InstructionDesk {
         }
         return identity.resolve(actorId.toString())
                 .switchIfEmpty(Mono.error(new TerminalDeniedException("ACTOR_UNKNOWN")))
+                .flatMap(subject -> actorId.equals(subject.actorId())
+                        ? Mono.just(subject) : Mono.error(new TerminalDeniedException("ACTOR_MISMATCH")))
                 .flatMap(subject -> access.check(new AccessCheck(subject.actorId(), "ADMINISTER", anchorType, anchorResourceId)))
+                .switchIfEmpty(Mono.error(new TerminalDeniedException("ACCESS_DECISION_MISSING")))
                 .flatMap(outcome -> outcome.allowed()
                         ? Mono.empty()
                         : Mono.error(new TerminalDeniedException(outcome.reasonCode())));
