@@ -12,6 +12,11 @@
     <artifactId>exp-finance-terminal-web</artifactId>
     <name>exp-finance-terminal-web</name>
 
+    <properties>
+        <openapi.gen.skip>false</openapi.gen.skip>
+        <openapi.gen.mainClass>io.fireflysoftware.experience.finance.terminal.OpenApiGenApplication</openapi.gen.mainClass>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.fireflysoftware</groupId>
@@ -25,6 +30,26 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.fireflyframework</groupId>
+            <artifactId>fireflyframework-security-resource-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webflux-api</artifactId>
+            <version>${springdoc-openapi.version}</version>
+        </dependency>
+        <dependency><groupId>org.fireflyframework</groupId><artifactId>fireflyframework-security-adapter-opa</artifactId></dependency>
+        <dependency><groupId>io.projectreactor</groupId><artifactId>reactor-test</artifactId><scope>test</scope></dependency>
     </dependencies>
 
     <build>
@@ -38,6 +63,18 @@
                         <goals>
                             <goal>repackage</goal>
                             <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
                         </goals>
                     </execution>
                 </executions>

@@ -1,0 +1,1599 @@
+{
+  "adapters": [
+    {
+      "implements": "AccessPort",
+      "memory": false,
+      "methods": [
+        "at",
+        "check"
+      ],
+      "name": "HttpAccessAdapter",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/HttpAccessAdapter.java",
+      "synthetic": false
+    },
+    {
+      "implements": "IdentityPort",
+      "memory": false,
+      "methods": [
+        "at",
+        "authenticate",
+        "resolve"
+      ],
+      "name": "HttpIdentityAdapter",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/HttpIdentityAdapter.java",
+      "synthetic": false
+    },
+    {
+      "implements": "ConfigurationPort",
+      "memory": true,
+      "methods": [
+        "getRequired",
+        "put",
+        "masters"
+      ],
+      "name": "SandboxConfigurationStore",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxConfigurationStore.java",
+      "synthetic": true
+    },
+    {
+      "implements": "DistributorPort",
+      "memory": true,
+      "methods": [
+        "list",
+        "link",
+        "links"
+      ],
+      "name": "SandboxDistributorDirectory",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxDistributorDirectory.java",
+      "synthetic": true
+    },
+    {
+      "implements": "InstructionPort",
+      "memory": false,
+      "methods": [
+        "mandate",
+        "standingOrder",
+        "directDebit"
+      ],
+      "name": "SandboxInstructionBook",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxInstructionBook.java",
+      "synthetic": true
+    },
+    {
+      "implements": "StaffRecordPort",
+      "memory": true,
+      "methods": [
+        "list",
+        "get",
+        "update",
+        "close",
+        "removeDraft",
+        "decide",
+        "decisionStatus",
+        "ListSeed"
+      ],
+      "name": "SandboxRecordBook",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxRecordBook.java",
+      "synthetic": true
+    }
+  ],
+  "ci_jdks": [
+    "25",
+    "25"
+  ],
+  "conditions": [
+    {
+      "expression": "prefix = \"firefly.terminal\", name = \"adapter\", havingValue = \"sandbox\", matchIfMissing = true",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalWiring.java"
+    },
+    {
+      "expression": "prefix = \"firefly.terminal\", name = \"adapter\", havingValue = \"sandbox\", matchIfMissing = true",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalWiring.java"
+    },
+    {
+      "expression": "prefix = \"firefly.terminal\", name = \"adapter\", havingValue = \"sandbox\", matchIfMissing = true",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalWiring.java"
+    },
+    {
+      "expression": "prefix = \"firefly.terminal\", name = \"adapter\", havingValue = \"domain\"",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalWiring.java"
+    },
+    {
+      "expression": "prefix = \"firefly.terminal\", name = \"adapter\", havingValue = \"domain\"",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalWiring.java"
+    },
+    {
+      "expression": "prefix = \"firefly.terminal\", name = \"adapter\", havingValue = \"domain\"",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalWiring.java"
+    }
+  ],
+  "config_files": [
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalWiring.java",
+    "exp-finance-terminal-sdk/src/main/resources/openapi.yml",
+    "exp-finance-terminal-web/src/main/resources/application.yaml"
+  ],
+  "docs": [
+    {
+      "path": "docs/staff-authentication-and-sdk.md",
+      "title": "Configure the finance staff terminal and its generated SDK"
+    }
+  ],
+  "editorial_sha256": "792e25d02fa3da9ab51c95983be2dd2300dba1f656cdf92b45dfc52b7267a492",
+  "errors": [
+    {
+      "evidence": "new IllegalStateException(\"PROPERTY_NOT_SET\")));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainConfigurationClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(exception.getMessage()));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainConfigurationClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(exception.getMessage()));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainConfigurationClient.java"
+    },
+    {
+      "evidence": "new IllegalStateException(\"Distributor audit log was not recorded\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainDistributorClient.java"
+    },
+    {
+      "evidence": "new IllegalStateException(\"Distributor id was not recorded\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainDistributorClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REMOVAL_NOT_APPLICABLE\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainRecordClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"DRAFT_REQUIRED\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainRecordClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"DECISION_NOT_APPLICABLE\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainRecordClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"DECISION_NOT_APPLICABLE\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainRecordClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"UPDATE_NOT_APPLICABLE\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainRecordClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"CLOSE_NOT_APPLICABLE\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainRecordClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REMOVAL_NOT_APPLICABLE\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainRecordClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"PROPERTY_NOT_SET\");",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainRecordClient.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REQUEST_INCOMPLETE\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/ImpersonationCoordinator.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACCESS_DECISION_MISSING\")))",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/ImpersonationCoordinator.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(outcome.reasonCode()));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/ImpersonationCoordinator.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"IMPERSONATION_AUDIT_NOT_CONFIRMED\")));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/ImpersonationCoordinator.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REQUEST_INCOMPLETE\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/InstructionDesk.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACTOR_UNKNOWN\")))",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/InstructionDesk.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACTOR_MISMATCH\")))",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/InstructionDesk.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACCESS_DECISION_MISSING\")))",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/InstructionDesk.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(outcome.reasonCode())));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/InstructionDesk.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"PROPERTY_NOT_SET\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxConfigurationStore.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REQUEST_INCOMPLETE\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxConfigurationStore.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"MASTER_TYPE_UNKNOWN\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxConfigurationStore.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"DISTRIBUTOR_NOT_FOUND\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxDistributorDirectory.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"RECORD_NOT_FOUND\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"PARTY_MISMATCH\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"PARTY_MISMATCH\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REMOVAL_NOT_APPLICABLE\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"PARTY_MISMATCH\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"DRAFT_REQUIRED\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"DECISION_NOT_APPLICABLE\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"PARTY_MISMATCH\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxRecordBook.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACTOR_UNKNOWN\")))",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACCESS_DECISION_MISSING\")))",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(outcome.reasonCode()))));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REQUEST_INCOMPLETE\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACTOR_UNKNOWN\")))",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACTOR_MISMATCH\")))",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACCESS_DECISION_MISSING\")))",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(outcome.reasonCode()))));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REMOVAL_NOT_APPLICABLE\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"DECISION_NOT_APPLICABLE\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"IMPERSONATION_NOT_CONFIRMED\"))))",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"REQUEST_INCOMPLETE\"));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACTOR_UNKNOWN\")))",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACTOR_MISMATCH\")))",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"ACCESS_DECISION_MISSING\")))",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(outcome.reasonCode())));",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"PROPERTY_NOT_SET\");",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalWiring.java"
+    },
+    {
+      "evidence": "@SecurityRequirement(name = \"staffBearer\")",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java"
+    },
+    {
+      "evidence": "HttpStatus.FORBIDDEN",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalAccessFilter.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"STAFF_STRICT_POLICY_REQUIRED\"));",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalAccessFilter.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"STAFF_ACTOR_MISMATCH\"));",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalAccessFilter.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"STAFF_ACTOR_MISMATCH\"));",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalAccessFilter.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"STAFF_ACCESS_DENIED\")))",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalAccessFilter.java"
+    },
+    {
+      "evidence": "new TerminalDeniedException(\"STAFF_ACCESS_DENIED\"));",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalAccessFilter.java"
+    },
+    {
+      "evidence": "new OAuth2AuthenticationException(new OAuth2Error(\"invalid_token\"),\"Invalid staff authentication\");",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalAuthentication.java"
+    },
+    {
+      "evidence": "new BadJwtException(\"Staff trust is not configured\"));",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalSecurityConfiguration.java"
+    }
+  ],
+  "files": {
+    ".github/workflows/maven-central.yml": "ff74cadeeb581c88e070d7967ff5d53f96df3fe113417e1d2907828460290c36",
+    ".github/workflows/release.yml": "98fb6e764558b18d7b62ca4df9c9d3d829b807688d8d483e2a9939b488c33598",
+    "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "docs/staff-authentication-and-sdk.md": "50d3dd1305e43b0f1f467a2948f26384dd95606cd77fee5c72cb05a95d01308a",
+    "exp-finance-terminal-core/pom.xml": "2356b8dd7a312db519a834b65c74d82057877a40dc4f591dc4cb25f4861ee1f8",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/AccessCheck.java": "0dca25fd35eed8195f2389da2c01004e4a1eb13d7862725de40a4463db9bc415",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/AccessOutcome.java": "8a18ebcc1f0838a1e8577f228f50268ca48ac7210a54b46a2f270c7f14063e63",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/AccessPort.java": "8d3831961d628746bd9fc06c0f718166a98745cb4c6add0cc36d38e1ca351076",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/AuditEntry.java": "ab3f07cf5f1b42a105cf4da7701df2cb7597dd70b2c9fa66a00aff39d06d4654",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/AuditPort.java": "6bbea35a728581a5c3f581bff8fb7db7b316c350d32b4d22d1cf50ac96692119",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/CloseMode.java": "b80b82852b8c6bc8fb4c06f0f09d4ecf51d0477d64222bea44100213ef972106",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/ConfigurationPort.java": "acd0c2849328b547163dba8da90794080b4d894eb76716d95c6ca9a430fefb2c",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DecideMode.java": "341e50b7dd219e35d567c76a107f366b63714994ec84069371eaf020209e3a79",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DistributorLink.java": "e4aaf741ef31f255c873136fcfd00fbc6a6dce697e33d263ef9f36d02cae5d4f",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DistributorPort.java": "2fd90f2b001c2843e7ca014507062b361f8eec4451f0bbca751801b31ec09200",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DistributorView.java": "9e73c0f1d56d52e6a2e1b7d74ded88f76c20fac794b6b2c491f9a99ddcf1f019",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainConfigurationClient.java": "0d596bb560d2cfee9e86af4f3414f5538b3d2ca7b2d92ce39d1779dfe5f71faf",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainDistributorClient.java": "efb237f9dae1dfc7a937687c9a9f1917564aa83e1daadcfb84f7055570386c0f",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainInstructionClient.java": "4641caad0b0a5d6f1fe8aeeb3236ca19b4bd1952d66077aaed3051bb91c95757",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DomainRecordClient.java": "b4ed2b0f994b4bff49a3ce2080935e1d8867941087ae5c404c0b85dfd6f0cc7c",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/FinanceArea.java": "2815c146fd102d09d790b2c24b72281890b89006dd89470518ba175f4362ec8c",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/FinanceSamples.java": "f8ad0ae83e54aa4f7b9a3e1d82cd07491f1b074205f0ebc0b90087643e6989dc",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/HttpAccessAdapter.java": "f2b93a629049db50871289ee31cad1f718922d859fd7ab4445f7775a72529485",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/HttpIdentityAdapter.java": "3efe031686b5b693fd65992d687e83c2d1e4a9bca4bd80a7e38c35a5a1509d5a",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/IdentityPort.java": "d12acee63292bc69037913c302aae0aacea447faa681333da218ef56900c10e5",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/ImpersonationCoordinator.java": "8cb5d3ab4a63adcd3d80ee5b7ec77bb543ba66e5df85a68204a4ffa61b6c137b",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/ImpersonationPort.java": "b307d24dbacef5b32a0f96407a4fed0aedcbbe77aff11b893c0769c5ccefed93",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/InMemoryAuditLog.java": "9e68e87672ed69483225cbf4cc6e501d907ac6ae9661dfada5e466530b8b9858",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/InstructionDesk.java": "60310de8c6d277b8c7ec4267db242b87e0ec41169bba0d02f1041a098755815b",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/InstructionPort.java": "3ee3b9cfae2f82a70eeacf59290256efb10347ff9ad03dc2f38ba5c9f35c8a4c",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/MasterRecord.java": "eb3eb6f65acaab447474c58a6f78737adcd3aade70f5698480ed9d5c90e7fef6",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/RecordCommand.java": "c14de416000c4691c6fe55d0431fb85dd26cd70d6ac28aeab19db2f073ec7d89",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxConfigurationStore.java": "3de6fb90adc9bbc3d9c9e7905cd08167c0ee34e5c8557b25d74fb4eb0e71a0a9",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxDistributorDirectory.java": "7789b37d9759c4dc5b930f2d79782c6b445970afe18138eda008ce43d9b64801",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxInstructionBook.java": "4be3257fd5a402b5bf8b9f9ea5df45e4e8fe0d5a21d6a86d523e8e259038218c",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SandboxRecordBook.java": "3f358342ca79f51167bb81d4ea84b8f236f6551fc335cd3c92aebd599557da23",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffArea.java": "85822d46e798908d259ca26a0891efe2cc8886fa08347c19e682daee1a36fcb4",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffRecord.java": "cee26d712cd78e37eed646651d985638135f8bbf6a6dfc4ba4493bf9e67efac4",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffRecordPort.java": "545b213c02907ae29ac2c788069207bf2464e8a8eda154ccb05ace16ea491062",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffSession.java": "a14b5e022bd4994686c1832a7b8fd41aff5cee123e57a26da0ee335bfb5d6967",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffTerminal.java": "b388531efdbab1e38682eb5a1073cd243823051c966a4fb515679b921a80c0ac",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SubjectRef.java": "8506c3b2a0c91efd5cfce8824f7b7b31fff0b8ac18e92042706044cea7bcbf01",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalDeniedException.java": "c75c608b0a58bfc64dbcc93105fded7c0f4c05e860664bbec7f735ed8cdb8856",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalWiring.java": "c5c746f195fed8b4e1b285b1c293caf2bd0c6f58cf8de1b35a039d8f78a78b8c",
+    "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/UpdateMode.java": "2f1015c65cea120cb478e131a0b2f07548480c05bfb27a887ef6a46ff5a29e76",
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainConfigurationClientTest.java": "7c1ce610177774ad254afad77c3d9a61dd6fee7a64070db77bbb87e71507b7d6",
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainDistributorClientTest.java": "517274eb6dc7476f4d644549679f961a8855353f8fcf865769bb0819cbc4e207",
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainInstructionClientTest.java": "9dd3ecb03bcd84876e43528ee6045b64fb736061d2cd60dff7ffee815c1dba49",
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainRecordClientTest.java": "ff30f20101a837ff47c9a93cae8cbf0ba85c5a5125f0d22b12777c8e65c1796f",
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/InstructionDeskTest.java": "d5908cc25cfe6972ba3d897b749b58286658d712d3345eef78a71c29ca7319b6",
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/SecurityCenterSandbox.java": "78dc871375b00cb9d4b73eb25a48b1a445fcb0a53df42ac28da7bf5630068f0d",
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java": "e570c4a298f7129b2e9c5630330386084da8d3cdcb83941fd4a80950f9062df6",
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalFixture.java": "7c3561970dcf20d69956d843337d86b81144337c7a22a199f524a67f989adec8",
+    "exp-finance-terminal-sdk/pom.xml": "eaedbb9aaa752b998dd677e63fb2a9fdbbc8e1bf24a1f9911375053caee2d3a6",
+    "exp-finance-terminal-sdk/src/main/resources/openapi.yml": "6ea59b9712c7e91437561b2ec1d70bfa6d7be6165b52e1c67e18adc25f1f77be",
+    "exp-finance-terminal-sdk/src/test/java/io/fireflysoftware/experience/finance/terminal/sdk/GeneratedTerminalClientContractTest.java": "9a8eb8d6ffe68de94420f75f12f650fcf2fcdcc2658f36020e4b514a9fad56ab",
+    "exp-finance-terminal-sdk/src/test/resources/InstructionsApi-original-public-signatures.txt": "80a8f1bfee696caf90c7df46e5c9e93bc8755e8ffd5c74027501ceb7366fdeee",
+    "exp-finance-terminal-sdk/src/test/resources/StaffTerminalApi-original-public-signatures.txt": "cc67d81e1eb76a3dee7eae78c5f3d0cdeca5e72f0974bd43cbb2a4f3a72f6e0e",
+    "exp-finance-terminal-web/pom.xml": "fd1e187d6dcd58b1543a0cfbebb09c249266633946364817c917fa654cf0d5e4",
+    "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/FinanceTerminalApplication.java": "0bfbbd6fdde4e9d606f36b9b9ba685c07290b2e8d6cefe5eb257afe0ecfc01b2",
+    "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java": "e068a2891124e8b605e76e7afde59f3c088c39470401808339c405de81ed35c6",
+    "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalAccessFilter.java": "f99fd7cf008cc33b23f277d436b8b6c8d9d0831c7116f4a3e5681bee20cb731f",
+    "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalAuthentication.java": "1bad7e9ffba46e7c5a973990b04db4d24b7d64716f009f08114114b2a0e01e42",
+    "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalExceptionHandler.java": "4ce224b8f555620d38ed21684761e6ba9e96c762556074c9026f0f8233569c32",
+    "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalSecurityConfiguration.java": "f7a108939b3dc9901417bf85da47d7506ca7bf45787fddc918f4f64cc962febc",
+    "exp-finance-terminal-web/src/main/resources/application.yaml": "d607a3b0ecc73a11b2714fc1d0eb290a86709779315a0396b21939bb24470d73",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/OpenApiGenApplication.java": "059ef68ffc331de29a58048a463073fb37e3e716d6f43c21ef79c6881103dd14",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java": "a1a5bc137452b00fcd34a06f94d5869d96e9056f0b85726b8dc9d9082061c816",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalDefaultDenyHttpTest.java": "a3e0f81395d646d8637fce55a08c04d5d333724a3f6d96164f4f1801a8900b89",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalIndependentHttpTest.java": "37f172c0e341dd014367e1a25619b8d9fcbc42d38873ba83ce7d717fba2d774a",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalMissingTrustHttpTest.java": "dc220c3e6acda41d856447f05f6e135905b0965773e04c4179302b3d57727004",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalOpenApiContractTest.java": "ae2dc817e3acc0fa3686ccd60d177a39ccb877af962048a52308ce87b3222362",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalPackagedStartupIT.java": "572a52a03c904f8555bca1dcb0400f1ea41f06b94fd4c0b455fb6a4b44fc1675",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalSessionAuthorityHttpTest.java": "33907d2965a175d0d885f91d4d7c7d580a6b9f3fd027fdb459798783bd554feb",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalStrictPolicyRequiredHttpTest.java": "5940d53a0413691cdb833b482691c80bfd61daffdb2b1c4953325d9d0fc749be",
+    "exp-finance-terminal-web/src/test/resources/legacy-terminal-openapi.yml": "dd83575aa4d1328b4a9e7aa1a27a71592d93f592563b6735a8b9d5d035b4100b",
+    "pom.xml": "31bf84716b5e7ea76cc963b9e16b37e1dc9435f7601ce4f5bfbe8ccc6219de09"
+  },
+  "migrations": [],
+  "modules": [
+    "exp-finance-terminal-core",
+    "exp-finance-terminal-web",
+    "exp-finance-terminal-sdk"
+  ],
+  "operations": [
+    {
+      "abstract": false,
+      "mapping": "\"/records/{area}\"",
+      "method": "list",
+      "owner": "StaffController",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java",
+      "route": "/api/v1/staff/records/{area}",
+      "signature": "public Flux<StaffRecord> list(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String area)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/records/{area}/{recordId}\"",
+      "method": "open",
+      "owner": "StaffController",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java",
+      "route": "/api/v1/staff/records/{area}/{recordId}",
+      "signature": "public Mono<StaffRecord> open(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/distributors\"",
+      "method": "distributors",
+      "owner": "StaffController",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java",
+      "route": "/api/v1/staff/distributors",
+      "signature": "public Flux<DistributorView> distributors(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "value = \"/configuration/{key}\", produces = MediaType.TEXT_PLAIN_VALUE",
+      "method": "getProperty",
+      "owner": "StaffController",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java",
+      "route": "/api/v1/staff/configuration/{key}",
+      "signature": "public Mono<String> getProperty(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String key)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/masters/{type}\"",
+      "method": "masters",
+      "owner": "StaffController",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java",
+      "route": "/api/v1/staff/masters/{type}",
+      "signature": "public Flux<MasterRecord> masters(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String type)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/accounts/{accountId}/servicing-mandates/{mandateId}\"",
+      "method": "mandate",
+      "owner": "StaffController",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java",
+      "route": "/api/v1/staff/accounts/{accountId}/servicing-mandates/{mandateId}",
+      "signature": "public Mono<InstructionPort.Mandate> mandate(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable UUID accountId, @PathVariable UUID mandateId)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/standing-orders/{runId}\"",
+      "method": "standingOrder",
+      "owner": "StaffController",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java",
+      "route": "/api/v1/staff/standing-orders/{runId}",
+      "signature": "public Mono<InstructionPort.StandingOrder> standingOrder(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable UUID runId)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/direct-debits/{mandateId}\"",
+      "method": "directDebit",
+      "owner": "StaffController",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java",
+      "route": "/api/v1/staff/direct-debits/{mandateId}",
+      "signature": "public Mono<InstructionPort.DirectDebit> directDebit(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable UUID mandateId)",
+      "verb": "GET"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/sessions\"",
+      "method": "signIn",
+      "owner": "StaffController",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java",
+      "route": "/api/v1/staff/sessions",
+      "signature": "public Mono<StaffSession> signIn( @Parameter(hidden = true) @AuthenticationPrincipal SecurityPrincipal principal, @RequestBody SignInRequest body)",
+      "verb": "POST"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/records/{area}/{recordId}/close\"",
+      "method": "close",
+      "owner": "StaffController",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java",
+      "route": "/api/v1/staff/records/{area}/{recordId}/close",
+      "signature": "public Mono<StaffRecord> close(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId, @RequestBody RecordBody body)",
+      "verb": "POST"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/records/{area}/{recordId}/remove\"",
+      "method": "removeDraft",
+      "owner": "StaffController",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java",
+      "route": "/api/v1/staff/records/{area}/{recordId}/remove",
+      "signature": "public Mono<Void> removeDraft(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId, @RequestBody RecordBody body)",
+      "verb": "POST"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/records/{area}/{recordId}/decide\"",
+      "method": "decide",
+      "owner": "StaffController",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java",
+      "route": "/api/v1/staff/records/{area}/{recordId}/decide",
+      "signature": "public Mono<StaffRecord> decide(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId, @RequestBody RecordBody body)",
+      "verb": "POST"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/records/{area}/{recordId}/distributor\"",
+      "method": "attach",
+      "owner": "StaffController",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java",
+      "route": "/api/v1/staff/records/{area}/{recordId}/distributor",
+      "signature": "public Mono<StaffRecord> attach(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId, @RequestBody RecordBody body)",
+      "verb": "POST"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/records/{area}/{recordId}\"",
+      "method": "update",
+      "owner": "StaffController",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java",
+      "route": "/api/v1/staff/records/{area}/{recordId}",
+      "signature": "public Mono<StaffRecord> update(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId, @RequestBody RecordBody body)",
+      "verb": "PUT"
+    },
+    {
+      "abstract": false,
+      "mapping": "\"/configuration/{key}\"",
+      "method": "putProperty",
+      "owner": "StaffController",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffController.java",
+      "route": "/api/v1/staff/configuration/{key}",
+      "signature": "public Mono<String> putProperty(@RequestHeader(value = \"X-Actor-Id\", required = false) UUID actorId, @PathVariable String key, @RequestBody PropertyBody body)",
+      "verb": "PUT"
+    }
+  ],
+  "poms": [
+    {
+      "artifact": "exp-finance-terminal-core",
+      "dependencies": [
+        "org.springframework.boot:spring-boot-starter-webflux:",
+        "com.fasterxml.jackson.core:jackson-databind:",
+        "org.springframework.boot:spring-boot-starter-test:",
+        "io.fireflysoftware:domain-core-configuration-sdk:26.10.6",
+        "io.fireflysoftware:domain-core-reference-data-sdk:26.10.6",
+        "io.fireflysoftware:domain-distributor-branding-sdk:26.10.6",
+        "io.fireflysoftware:domain-banking-accounts-sdk:26.10.6",
+        "io.fireflysoftware:domain-payments-sdk:26.10.6",
+        "io.fireflysoftware:domain-banking-cards-sdk:26.10.6",
+        "io.fireflysoftware:domain-lending-loan-origination-sdk:26.10.6",
+        "io.fireflysoftware:domain-lending-mortgage-sdk:26.10.6",
+        "io.fireflysoftware:domain-lending-supply-chain-finance-sdk:26.10.6",
+        "io.fireflysoftware:domain-lending-collateral-management-sdk:26.10.6",
+        "io.fireflysoftware:domain-lending-delinquency-collections-sdk:26.10.6",
+        "io.fireflysoftware:domain-lending-provisioning-risk-sdk:26.10.6",
+        "io.fireflysoftware:domain-lending-regulatory-compliance-sdk:26.10.6",
+        "io.fireflysoftware:domain-core-security-center-sdk:26.10.6",
+        "io.fireflysoftware:domain-core-security-center-core:26.10.6"
+      ],
+      "group": "io.fireflysoftware",
+      "java": "",
+      "parent": "io.fireflysoftware:exp-finance-terminal:26.10.6",
+      "path": "exp-finance-terminal-core/pom.xml",
+      "plugins": [],
+      "version": "26.10.6"
+    },
+    {
+      "artifact": "exp-finance-terminal-sdk",
+      "dependencies": [
+        "io.fireflysoftware:exp-finance-terminal-web:",
+        "io.swagger.core.v3:swagger-annotations:",
+        "com.fasterxml.jackson.core:jackson-databind:",
+        "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:",
+        "jakarta.annotation:jakarta.annotation-api:",
+        "org.projectlombok:lombok:",
+        "com.squareup.okhttp3:okhttp:",
+        "com.squareup.okhttp3:logging-interceptor:",
+        "org.openapitools:jackson-databind-nullable:0.2.8",
+        "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:",
+        "javax.annotation:javax.annotation-api:1.3.2",
+        "org.springframework:spring-webflux:",
+        "org.springframework.boot:spring-boot-starter-test:"
+      ],
+      "group": "io.fireflysoftware",
+      "java": "",
+      "parent": "io.fireflysoftware:exp-finance-terminal:26.10.6",
+      "path": "exp-finance-terminal-sdk/pom.xml",
+      "plugins": [
+        "openapi-generator-maven-plugin"
+      ],
+      "version": "26.10.6"
+    },
+    {
+      "artifact": "exp-finance-terminal-web",
+      "dependencies": [
+        "io.fireflysoftware:exp-finance-terminal-core:",
+        "org.springframework.boot:spring-boot-starter-webflux:",
+        "org.springframework.boot:spring-boot-starter-actuator:",
+        "org.springframework.boot:spring-boot-starter-test:",
+        "org.fireflyframework:fireflyframework-security-resource-server:",
+        "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:",
+        "org.springdoc:springdoc-openapi-starter-webflux-api:${springdoc-openapi.version}"
+      ],
+      "group": "io.fireflysoftware",
+      "java": "",
+      "parent": "io.fireflysoftware:exp-finance-terminal:26.10.6",
+      "path": "exp-finance-terminal-web/pom.xml",
+      "plugins": [
+        "maven-failsafe-plugin",
+        "spring-boot-maven-plugin"
+      ],
+      "version": "26.10.6"
+    },
+    {
+      "artifact": "exp-finance-terminal",
+      "dependencies": [
+        "io.fireflysoftware:firefly-bom:26.10.6",
+        "io.fireflysoftware:exp-finance-terminal-core:${project.version}",
+        "io.fireflysoftware:exp-finance-terminal-web:${project.version}",
+        "io.fireflysoftware:exp-finance-terminal-sdk:${project.version}"
+      ],
+      "group": "io.fireflysoftware",
+      "java": "25",
+      "parent": "io.fireflysoftware:firefly-parent:26.10.6",
+      "path": "pom.xml",
+      "plugins": [],
+      "version": "26.10.6"
+    }
+  ],
+  "ports": [
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Mono<AccessOutcome> check(AccessCheck request)"
+      ],
+      "name": "AccessPort",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/AccessPort.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Mono<AuditEntry> append(AuditEntry entry)",
+        "Flux<AuditEntry> list()"
+      ],
+      "name": "AuditPort",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/AuditPort.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Mono<String> getRequired(String key)",
+        "Mono<String> put(String key, String value, java.util.UUID employeeId)",
+        "Flux<MasterRecord> masters(String type)"
+      ],
+      "name": "ConfigurationPort",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/ConfigurationPort.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Flux<DistributorView> list()",
+        "Mono<DistributorView> link(DistributorLink link)"
+      ],
+      "name": "DistributorPort",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DistributorPort.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Mono<SubjectRef> authenticate(String username)",
+        "Mono<SubjectRef> resolve(String actorId)"
+      ],
+      "name": "IdentityPort",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/IdentityPort.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Mono<AuditEntry> impersonate(UUID employeeId, UUID customerPartyId, String reason, String action, String area, UUID recordId)"
+      ],
+      "name": "ImpersonationPort",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/ImpersonationPort.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Mono<Mandate> mandate(UUID accountId, UUID mandateId)",
+        "Mono<StandingOrder> standingOrder(UUID runId)",
+        "Mono<DirectDebit> directDebit(UUID mandateId)",
+        "record Mandate(UUID id, UUID accountId, UUID partyId, String role, boolean active)",
+        "record StandingOrder(UUID id, UUID paymentScheduleId, BigDecimal amount, String currency, LocalDate valueDate)",
+        "record DirectDebit(UUID id, UUID debtorAccountId, UUID creditorPartyId, String status, BigDecimal amountLimit, String currency, String reference)"
+      ],
+      "name": "InstructionPort",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/InstructionPort.java"
+    },
+    {
+      "boundary": false,
+      "boundary_evidence": [],
+      "methods": [
+        "Flux<StaffRecord> list(StaffArea area)",
+        "Mono<StaffRecord> get(StaffArea area, UUID recordId)",
+        "Mono<StaffRecord> update(RecordCommand command)",
+        "Mono<StaffRecord> close(RecordCommand command)",
+        "Mono<Void> removeDraft(RecordCommand command, String requiredStatus)",
+        "Mono<StaffRecord> decide(RecordCommand command)"
+      ],
+      "name": "StaffRecordPort",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffRecordPort.java"
+    }
+  ],
+  "repository": "exp-finance-terminal",
+  "routes": [],
+  "schema": 1,
+  "settings": [
+    {
+      "default": "http://localhost:8085",
+      "key": "api-configuration.domain-platform.security-center.base-path",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalWiring.java"
+    },
+    {
+      "default": "",
+      "key": "firefly.terminal.security.issuer",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalSecurityConfiguration.java"
+    },
+    {
+      "default": "",
+      "key": "firefly.terminal.security.audience",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalSecurityConfiguration.java"
+    },
+    {
+      "default": "",
+      "key": "firefly.terminal.security.jwk-set-uri",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalSecurityConfiguration.java"
+    },
+    {
+      "default": "false",
+      "key": "firefly.security.resource-server.strict-policy",
+      "path": "exp-finance-terminal-web/src/main/java/io/fireflysoftware/experience/finance/terminal/TerminalSecurityConfiguration.java"
+    },
+    {
+      "default": "8120",
+      "key": "SERVER_PORT",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8085",
+      "key": "SECURITY_CENTER_URL",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "sandbox",
+      "key": "FIREFLY_TERMINAL_ADAPTER",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8088",
+      "key": "CONFIG_MGMT_URL",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8089",
+      "key": "MASTER_DATA_URL",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8070",
+      "key": "DISTRIBUTOR_MGMT_URL",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8090",
+      "key": "BANKING_ACCOUNTS_URL",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8092",
+      "key": "ENDPOINT_DOMAIN_PAYMENTS",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8091",
+      "key": "BANKING_CARDS_URL",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8092",
+      "key": "LOAN_ORIGINATION_URL",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8093",
+      "key": "MORTGAGE_URL",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8094",
+      "key": "SUPPLY_CHAIN_FINANCE_URL",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8095",
+      "key": "COLLATERAL_URL",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8097",
+      "key": "COLLECTIONS_URL",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8098",
+      "key": "PROVISIONING_URL",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    },
+    {
+      "default": "http://localhost:8099",
+      "key": "AML_URL",
+      "path": "exp-finance-terminal-web/src/main/resources/application.yaml"
+    }
+  ],
+  "test_cases": [
+    {
+      "name": "readsAndWritesConfigurationAndReferenceDataThroughTheDomainSdks",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainConfigurationClientTest.java"
+    },
+    {
+      "name": "listReadsDistributorsFromTheDomainSdk",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainDistributorClientTest.java"
+    },
+    {
+      "name": "linkReadsTheViewFromTheDistributorProfile",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainDistributorClientTest.java"
+    },
+    {
+      "name": "linkDoesNotInventAViewWhenTheAuditRowIsMissing",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainDistributorClientTest.java"
+    },
+    {
+      "name": "readsGoThroughTheDomainSdks",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainInstructionClientTest.java"
+    },
+    {
+      "name": "mortgageUpdatePutsTheEmployeeOnTheAgreement",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainRecordClientTest.java"
+    },
+    {
+      "name": "accountUpdatePostsTheCustomerAsHolder",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainRecordClientTest.java"
+    },
+    {
+      "name": "collateralClosePostsTheClosePath",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainRecordClientTest.java"
+    },
+    {
+      "name": "supplyChainRemovalDeletesOnlyADraft",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainRecordClientTest.java"
+    },
+    {
+      "name": "employeeReadsTheSampleInstructionsWithoutASocket",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/InstructionDeskTest.java"
+    },
+    {
+      "name": "deniedAdministerDoesNotRead",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/InstructionDeskTest.java"
+    },
+    {
+      "name": "identity",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/SecurityCenterSandbox.java"
+    },
+    {
+      "name": "access",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/SecurityCenterSandbox.java"
+    },
+    {
+      "name": "write",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/SecurityCenterSandbox.java"
+    },
+    {
+      "name": "close",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/SecurityCenterSandbox.java"
+    },
+    {
+      "name": "sampleEmployeeSignsIn",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "customerSubjectCannotOpenTheTerminal",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "deniedActorCannotOpenTheTerminal",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "unknownUsernameIsRejected",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "customerCanReadTheSampleAccountAndStillCannotAdminister",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "sampleEmployeeImpersonatesBeforeACustomerUpdate",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "deniedActorCannotImpersonateAndTheRecordStaysUnchanged",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "customerCannotImpersonate",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "collateralCloseUsesReleasedFromConfiguration",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "provisioningCloseUsesReleasedFromConfiguration",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "supplyChainDraftCanBeRemovedAndAnActiveAgreementCannot",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "employeeAttachesADistributorUuid",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "propertyChangeGoesThroughConfigurationAndRequiresAdminister",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "employeeListsSampleAccounts",
+      "path": "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java"
+    },
+    {
+      "name": "generatedPublicClientRetainsTheOriginalSignatures",
+      "path": "exp-finance-terminal-sdk/src/test/java/io/fireflysoftware/experience/finance/terminal/sdk/GeneratedTerminalClientContractTest.java"
+    },
+    {
+      "name": "startJwks",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "trust",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "stop",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "reset",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "anonymousActorHeaderCannotReadStaffData",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "usernameIsNotAnAuthenticationCredential",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "arbitraryBearerCannotTurnActorHeaderIntoIdentity",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "signedIdentityReadsAndCarriesExactCurrentPolicyContext",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "signedActorIsDerivedWhenCompatibilityHeaderIsAbsent",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "mismatchedHeaderCannotSelectAnotherActor",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "duplicateActorHeaderIsDenied",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "currentDenialAfterPermitCannotReuseASuccess",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "emptyOrObligationBearingPolicyIsDenied",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "sessionUsernameCannotOverrideSignedActor",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "resolverCannotRemapSignedActor",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "signedTokensNeedIssuerAudienceFiniteExpiryAndExactActorTenantClaims",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "wrongRsaSignatureIsDenied",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "policyFailureHasNoBusinessEffectsOrInternalDetails",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "legacyBusinessDenialRetainsValidJsonReasonCode",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "sessionAlsoRejectsResolverActorRemapping",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java"
+    },
+    {
+      "name": "trust",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalDefaultDenyHttpTest.java"
+    },
+    {
+      "name": "stop",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalDefaultDenyHttpTest.java"
+    },
+    {
+      "name": "reset",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalDefaultDenyHttpTest.java"
+    },
+    {
+      "name": "nativeJaflyPolicyDeniesWithoutProjectRules",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalDefaultDenyHttpTest.java"
+    },
+    {
+      "name": "unmatchedRoutesCannotBecomeAnonymousOrAuthenticatedBypass",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalDefaultDenyHttpTest.java"
+    },
+    {
+      "name": "healthHasNoStaffDataOrAuthority",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalDefaultDenyHttpTest.java"
+    },
+    {
+      "name": "trust",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "stop",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "reset",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "currentPolicyTimeoutMustDenyBeforeAnyBusinessPort",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "expiryWhileCurrentPolicyIsPendingMustDenyBeforeAnyBusinessPort",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "affirmativeControlReachesExactlyOneRecordEffect",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "emptyAdministerMustNotReadAnyRecords",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "emptyImpersonateMustNotMutateAnyRecord",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "missingImpersonationAuditAcknowledgmentMustNotMutateAnyRecord",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "emptyAdministerMustNotReadInstructions",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "emptyAdministerMustNotCreateAnAuthenticatedSession",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalIndependentHttpTest.java"
+    },
+    {
+      "name": "missingTrustCannotUseTheFrameworkGeneratedLocalKeyAsFallback",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalMissingTrustHttpTest.java"
+    },
+    {
+      "name": "nativeProducerRetainsHistoricSdkNamesAndPublishesBearerTrust",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalOpenApiContractTest.java"
+    },
+    {
+      "name": "ordinaryExecutableStartsWithOnlyItsPackagedRuntimeAndPublishesItsContract",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalPackagedStartupIT.java"
+    },
+    {
+      "name": "trust",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "stopJwks",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "reset",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "noBusinessEffects",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "retainedAuthenticatedSessionCannotReadStaffData",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "retainedSessionCannotPerformUnsafeStaffOperationWithoutBearer",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "signedBearerWinsOverRetainedSessionAndStillUsesCurrentPolicy",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "invalidBearerCannotBorrowVerifiedSession",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalSessionAuthorityHttpTest.java"
+    },
+    {
+      "name": "trust",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalStrictPolicyRequiredHttpTest.java"
+    },
+    {
+      "name": "stop",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalStrictPolicyRequiredHttpTest.java"
+    },
+    {
+      "name": "aPermittingProjectProviderCannotBypassRequiredStrictPolicyMode",
+      "path": "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalStrictPolicyRequiredHttpTest.java"
+    }
+  ],
+  "tests": [
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainConfigurationClientTest.java",
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainDistributorClientTest.java",
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainInstructionClientTest.java",
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/DomainRecordClientTest.java",
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/InstructionDeskTest.java",
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/SecurityCenterSandbox.java",
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/StaffTerminalTest.java",
+    "exp-finance-terminal-core/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalFixture.java",
+    "exp-finance-terminal-sdk/src/test/java/io/fireflysoftware/experience/finance/terminal/sdk/GeneratedTerminalClientContractTest.java",
+    "exp-finance-terminal-sdk/src/test/resources/InstructionsApi-original-public-signatures.txt",
+    "exp-finance-terminal-sdk/src/test/resources/StaffTerminalApi-original-public-signatures.txt",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/OpenApiGenApplication.java",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalBoundaryHttpTest.java",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalDefaultDenyHttpTest.java",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalIndependentHttpTest.java",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalMissingTrustHttpTest.java",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalOpenApiContractTest.java",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalPackagedStartupIT.java",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalSessionAuthorityHttpTest.java",
+    "exp-finance-terminal-web/src/test/java/io/fireflysoftware/experience/finance/terminal/TerminalStrictPolicyRequiredHttpTest.java",
+    "exp-finance-terminal-web/src/test/resources/legacy-terminal-openapi.yml"
+  ],
+  "types": [
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "actorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "action",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "resourceType",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "resourceId",
+          "type": "String"
+        }
+      ],
+      "name": "AccessCheck",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/AccessCheck.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "allowed",
+          "type": "boolean"
+        },
+        {
+          "constraints": [],
+          "name": "reasonCode",
+          "type": "String"
+        }
+      ],
+      "name": "AccessOutcome",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/AccessOutcome.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "auditId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "employeeId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "customerPartyId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "reason",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "action",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "area",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "recordId",
+          "type": "UUID"
+        }
+      ],
+      "name": "AuditEntry",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/AuditEntry.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "distributorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "recordId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "customerPartyId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "employeeId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "channel",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "collaboratorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "area",
+          "type": "String"
+        }
+      ],
+      "name": "DistributorLink",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DistributorLink.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "distributorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "name",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "role",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "partyId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "channel",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "agencyId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "collaboratorId",
+          "type": "UUID"
+        }
+      ],
+      "name": "DistributorView",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/DistributorView.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "type",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "id",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "code",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "name",
+          "type": "String"
+        }
+      ],
+      "name": "MasterRecord",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/MasterRecord.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "area",
+          "type": "StaffArea"
+        },
+        {
+          "constraints": [],
+          "name": "recordId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "customerPartyId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "reason",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "note",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "distributorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "collaboratorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "channel",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "actorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "status",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "decision",
+          "type": "String"
+        }
+      ],
+      "name": "RecordCommand",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/RecordCommand.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "id",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "area",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "customerPartyId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "actorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "status",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "reference",
+          "type": "String"
+        },
+        {
+          "constraints": [],
+          "name": "distributorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "note",
+          "type": "String"
+        }
+      ],
+      "name": "StaffRecord",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffRecord.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "actorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "provider",
+          "type": "String"
+        }
+      ],
+      "name": "StaffSession",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/StaffSession.java",
+      "persistent": false
+    },
+    {
+      "constraints": [],
+      "fields": [
+        {
+          "constraints": [],
+          "name": "actorId",
+          "type": "UUID"
+        },
+        {
+          "constraints": [],
+          "name": "provider",
+          "type": "String"
+        }
+      ],
+      "name": "SubjectRef",
+      "path": "exp-finance-terminal-core/src/main/java/io/fireflysoftware/experience/finance/terminal/SubjectRef.java",
+      "persistent": false
+    }
+  ],
+  "verification_hazards": [],
+  "workflows": [
+    ".github/workflows/maven-central.yml",
+    ".github/workflows/release.yml"
+  ]
+}
