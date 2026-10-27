@@ -48,6 +48,8 @@
             <artifactId>springdoc-openapi-starter-webflux-api</artifactId>
             <version>${springdoc-openapi.version}</version>
         </dependency>
+        <dependency><groupId>org.fireflyframework</groupId><artifactId>fireflyframework-security-adapter-opa</artifactId></dependency>
+        <dependency><groupId>io.projectreactor</groupId><artifactId>reactor-test</artifactId><scope>test</scope></dependency>
     </dependencies>
 
     <build>

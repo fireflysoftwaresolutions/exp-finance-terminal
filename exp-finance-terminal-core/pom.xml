@@ -102,5 +102,11 @@
             <version>26.10.6</version>
             <scope>test</scope>
         </dependency>
+        <dependency><groupId>org.fireflyframework</groupId><artifactId>fireflyframework-security-spi</artifactId></dependency>
+        <dependency><groupId>org.fireflyframework</groupId><artifactId>fireflyframework-security-oauth2-client</artifactId></dependency>
+        <dependency><groupId>org.fireflyframework</groupId><artifactId>fireflyframework-r2dbc</artifactId></dependency>
+        <dependency><groupId>org.springframework.security</groupId><artifactId>spring-security-oauth2-jose</artifactId></dependency>
+        <dependency><groupId>io.fireflysoftware</groupId><artifactId>domain-core-organization-sdk</artifactId><version>26.10.6</version></dependency>
+        <dependency><groupId>io.projectreactor</groupId><artifactId>reactor-test</artifactId><scope>test</scope></dependency>
     </dependencies>
 </project>

@@ -11,7 +11,7 @@
 
 Experience API for staff access to banking and lending administration in Firefly OpenPlatform.
 
-[Platform documentation](https://docs.fireflysoftware.io/) · [Source reference](docs/openplatform/reference.md) · [Source inventory](docs/openplatform/source-inventory.json)
+[Current Bank owner administration](docs/current-bank-owner-administration.md) · [Platform documentation](https://docs.fireflysoftware.io/) · [Source reference](docs/openplatform/reference.md) · [Source inventory](docs/openplatform/source-inventory.json)
 
 ## Purpose, scope, and readiness
 
