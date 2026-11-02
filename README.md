@@ -13,6 +13,8 @@ Experience API for staff access to banking and lending administration in Firefly
 
 [Current Bank owner administration](docs/current-bank-owner-administration.md) · [Platform documentation](https://docs.fireflysoftware.io/) · [Source reference](docs/openplatform/reference.md) · [Source inventory](docs/openplatform/source-inventory.json)
 
+[Observed owner outcomes](docs/observed-owner-outcomes.md) explains closure reads, uncertain writes, loan status identities, and the limits of the qualified Domain adapter.
+
 ## Purpose, scope, and readiness
 
 This service presents staff access to banking and lending administration to a channel. It coordinates domain calls and channel-facing request/response types while keeping business record ownership in the corresponding core services.
