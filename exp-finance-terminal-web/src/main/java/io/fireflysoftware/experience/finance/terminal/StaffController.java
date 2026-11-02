@@ -17,6 +17,7 @@
 
 package io.fireflysoftware.experience.finance.terminal;
 
+import org.fireflyframework.web.idempotency.annotation.DisableIdempotency;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,6 +53,7 @@ public class StaffController {
         this.instructions = instructions;
     }
 
+    @DisableIdempotency
     @Operation(operationId = "signIn", tags = "Staff Terminal")
     @PostMapping("/sessions")
     public Mono<StaffSession> signIn(
@@ -61,18 +63,21 @@ public class StaffController {
                 TerminalAuthentication.uuid(principal.attributes().get("staffActorId"))));
     }
 
+    @DisableIdempotency
     @Operation(operationId = "listRecords", tags = "Staff Terminal")
     @GetMapping("/records/{area}")
     public Flux<StaffRecord> list(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area) {
         return terminal.list(actorId, FinanceArea.fromName(area));
     }
 
+    @DisableIdempotency
     @Operation(operationId = "openRecord", tags = "Staff Terminal")
     @GetMapping("/records/{area}/{recordId}")
     public Mono<StaffRecord> open(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area, @PathVariable UUID recordId) {
         return terminal.open(actorId, FinanceArea.fromName(area), recordId);
     }
 
+    @DisableIdempotency
     @Operation(operationId = "updateRecord", tags = "Staff Terminal")
     @PutMapping("/records/{area}/{recordId}")
     public Mono<StaffRecord> update(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area,
@@ -80,6 +85,7 @@ public class StaffController {
         return terminal.update(actorId, body.command(FinanceArea.fromName(area), recordId));
     }
 
+    @DisableIdempotency
     @Operation(operationId = "closeRecord", tags = "Staff Terminal")
     @PostMapping("/records/{area}/{recordId}/close")
     public Mono<StaffRecord> close(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area,
@@ -87,6 +93,7 @@ public class StaffController {
         return terminal.close(actorId, body.command(FinanceArea.fromName(area), recordId));
     }
 
+    @DisableIdempotency
     @Operation(operationId = "removeDraft", tags = "Staff Terminal")
     @PostMapping("/records/{area}/{recordId}/remove")
     public Mono<Void> removeDraft(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area,
@@ -94,6 +101,7 @@ public class StaffController {
         return terminal.removeDraft(actorId, body.command(FinanceArea.fromName(area), recordId));
     }
 
+    @DisableIdempotency
     @Operation(operationId = "decideRecord", tags = "Staff Terminal")
     @PostMapping("/records/{area}/{recordId}/decide")
     public Mono<StaffRecord> decide(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area,
@@ -101,6 +109,7 @@ public class StaffController {
         return terminal.decide(actorId, body.command(FinanceArea.fromName(area), recordId));
     }
 
+    @DisableIdempotency
     @Operation(operationId = "attachDistributor", tags = "Staff Terminal")
     @PostMapping("/records/{area}/{recordId}/distributor")
     public Mono<StaffRecord> attach(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String area,
@@ -108,12 +117,14 @@ public class StaffController {
         return terminal.attachDistributor(actorId, body.command(FinanceArea.fromName(area), recordId));
     }
 
+    @DisableIdempotency
     @Operation(operationId = "listDistributors", tags = "Staff Terminal")
     @GetMapping("/distributors")
     public Flux<DistributorView> distributors(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId) {
         return terminal.distributors(actorId);
     }
 
+    @DisableIdempotency
     @Operation(operationId = "putProperty", tags = "Staff Terminal")
     @PutMapping("/configuration/{key}")
     public Mono<String> putProperty(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String key,
@@ -121,18 +132,21 @@ public class StaffController {
         return terminal.putProperty(actorId, key, body.value());
     }
 
+    @DisableIdempotency
     @Operation(operationId = "getProperty", tags = "Staff Terminal")
     @GetMapping(value = "/configuration/{key}", produces = MediaType.TEXT_PLAIN_VALUE)
     public Mono<String> getProperty(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String key) {
         return terminal.getProperty(actorId, key);
     }
 
+    @DisableIdempotency
     @Operation(operationId = "listMasters", tags = "Staff Terminal")
     @GetMapping("/masters/{type}")
     public Flux<MasterRecord> masters(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId, @PathVariable String type) {
         return terminal.masters(actorId, type);
     }
 
+    @DisableIdempotency
     @Operation(operationId = "readMandate", tags = "Instructions")
     @GetMapping("/accounts/{accountId}/servicing-mandates/{mandateId}")
     public Mono<InstructionPort.Mandate> mandate(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId,
@@ -140,6 +154,7 @@ public class StaffController {
         return instructions.mandate(actorId, accountId, mandateId);
     }
 
+    @DisableIdempotency
     @Operation(operationId = "readStandingOrder", tags = "Instructions")
     @GetMapping("/standing-orders/{runId}")
     public Mono<InstructionPort.StandingOrder> standingOrder(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId,
@@ -147,6 +162,7 @@ public class StaffController {
         return instructions.standingOrder(actorId, runId);
     }
 
+    @DisableIdempotency
     @Operation(operationId = "readDirectDebit", tags = "Instructions")
     @GetMapping("/direct-debits/{mandateId}")
     public Mono<InstructionPort.DirectDebit> directDebit(@RequestHeader(value = "X-Actor-Id", required = false) UUID actorId,

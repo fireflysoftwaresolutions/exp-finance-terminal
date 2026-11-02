@@ -65,6 +65,8 @@ class TerminalBoundaryHttpTest {
     } catch (java.io.IOException error) { throw new IllegalStateException(error); }
   }
   @DynamicPropertySource static void trust(DynamicPropertyRegistry p) {
+    p.add("spring.application.name",()->"exp-finance-terminal");
+    p.add("firefly.cache.default-cache-type",()->"CAFFEINE");
     startJwks();
     p.add("firefly.terminal.security.issuer",()->ISSUER);
     p.add("firefly.terminal.security.audience",()->"staff-finance");
@@ -75,7 +77,8 @@ class TerminalBoundaryHttpTest {
   @BeforeEach void reset() { IDENTITIES.set(0); ACCESS.set(0); DECISION.set(Decision.permit()); REMAP.set(null); POLICY_CALLS.clear(); AUTHENTICATES.set(0); DENIAL.set(null); POLICY_FAILURE.set(null); BUSINESS_ORDER.clear(); }
 
   @SpringBootConfiguration
-  @EnableAutoConfiguration
+  @EnableAutoConfiguration(excludeName={"org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration",
+      "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration"})
   @Import({StaffController.class, TerminalExceptionHandler.class, TerminalSecurityConfiguration.class})
   static class Application {
     @Bean PolicyDecisionPort currentPolicy() {
@@ -184,6 +187,23 @@ class TerminalBoundaryHttpTest {
     assertEquals(200,response.statusCode(),response.body()); assertTrue(response.body().contains(ACTOR.toString()));
     assertEquals("terminal.finance.session",POLICY_CALLS.getFirst().get("action")); assertEquals(0,AUTHENTICATES.get());
     assertEquals(1,IDENTITIES.get()); assertEquals(1,ACCESS.get());
+  }
+  @Test void sameSessionRetryKeyCannotReuseIdentityOrCurrentPolicy() throws Exception {
+    var request=HttpRequest.newBuilder(URI.create("http://127.0.0.1:"+port+"/api/v1/staff/sessions"))
+        .header("Authorization","Bearer "+token(Map.of())).header("Content-Type","application/json")
+        .header("X-Idempotency-Key","session-current-authority")
+        .POST(HttpRequest.BodyPublishers.ofString("{\"username\":\"unchosen\"}")).build();
+    var client=HttpClient.newHttpClient();
+    for(int attempt=0;attempt<2;attempt++) {
+      var response=client.send(request,HttpResponse.BodyHandlers.ofString());
+      assertEquals(200,response.statusCode(),response.body()); assertTrue(response.body().contains(ACTOR.toString()));
+    }
+    assertEquals(2,POLICY_CALLS.size()); assertEquals(2,IDENTITIES.get()); assertEquals(2,ACCESS.get());
+    assertEquals(0,AUTHENTICATES.get());
+    DECISION.set(Decision.deny("session-authority-revoked"));
+    var refused=client.send(request,HttpResponse.BodyHandlers.ofString());
+    assertEquals(403,refused.statusCode(),refused.body()); assertEquals(3,POLICY_CALLS.size());
+    assertEquals(2,IDENTITIES.get()); assertEquals(2,ACCESS.get()); assertEquals(0,AUTHENTICATES.get());
   }
   @Test void resolverCannotRemapSignedActor() throws Exception {
     REMAP.set(TENANT);

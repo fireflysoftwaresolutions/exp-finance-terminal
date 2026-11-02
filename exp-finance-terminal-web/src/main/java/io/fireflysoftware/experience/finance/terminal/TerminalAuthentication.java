@@ -29,9 +29,15 @@ import reactor.core.publisher.Mono;
 final class TerminalAuthentication {
   private final PrincipalFactory principals;
   private final Clock clock;
+  private final ManagedPostingStaffTrust posting;
 
   TerminalAuthentication(PrincipalFactory principals, Clock clock) {
+    this(principals,clock,ManagedPostingStaffTrust.disabled());
+  }
+
+  TerminalAuthentication(PrincipalFactory principals, Clock clock,ManagedPostingStaffTrust posting) {
     this.principals = Objects.requireNonNull(principals);
+    this.posting = Objects.requireNonNull(posting);
     this.clock = Objects.requireNonNull(clock);
   }
 
@@ -40,8 +46,10 @@ final class TerminalAuthentication {
       if (jwt == null || jwt.getIssuer() == null || !text(jwt.getSubject(),255)
           || !future(jwt.getExpiresAt(),clock) || jwt.getTokenValue() == null
           || jwt.getTokenValue().length() > 16384) throw invalid();
-      String actor=uuid(jwt.getClaim("staff_actor_id"));
-      String tenant=uuid(jwt.getClaim("tenant_id"));
+      boolean managed=posting.candidate(jwt);
+      if(managed&&!posting.valid(jwt,clock))throw invalid();
+      String actor=uuid(jwt.getClaim(managed?posting.staffClaim():"staff_actor_id"));
+      String tenant=managed?posting.platformTenant():uuid(jwt.getClaim("tenant_id"));
       var principal=principals.fromClaims(jwt.getSubject(),jwt.getIssuer().toString(),jwt.getClaims())
           .toBuilder().tenantId(tenant).attributes(Map.of("staffActorId",actor)).build();
       return new JwtAuthenticationToken(jwt,principal,

@@ -29,9 +29,15 @@ final class TerminalAccessFilter implements WebFilter {
   private final PolicyDecisionPort policies;
   private final Clock clock;
   private final boolean strictPolicy;
+  private final ManagedPostingStaffTrust posting;
 
   TerminalAccessFilter(SecurityContextPort contexts,PolicyDecisionPort policies,Clock clock,boolean strictPolicy) {
+    this(contexts,policies,clock,strictPolicy,ManagedPostingStaffTrust.disabled());
+  }
+
+  TerminalAccessFilter(SecurityContextPort contexts,PolicyDecisionPort policies,Clock clock,boolean strictPolicy,ManagedPostingStaffTrust posting) {
     this.contexts=Objects.requireNonNull(contexts);
+    this.posting=Objects.requireNonNull(posting);
     this.policies=Objects.requireNonNull(policies);
     this.clock=Objects.requireNonNull(clock);
     this.strictPolicy=strictPolicy;
@@ -65,7 +71,11 @@ final class TerminalAccessFilter implements WebFilter {
         String tenant;
         try {
           actor=TerminalAuthentication.uuid(principal.attributes().get("staffActorId"));
-          tenant=TerminalAuthentication.uuid(principal.tenantId());
+          if(posting.route(exchange.getRequest().getMethod().name(),path)) {
+            if(!posting.valid(principal,clock)||!posting.scoped(principal,path)||!actor.equals(principal.claims().get(posting.staffClaim())))
+              return Mono.error(new TerminalDeniedException("STAFF_MANAGED_POSTING_IDENTITY_REQUIRED"));
+            tenant=posting.platformTenant();
+          }else tenant=TerminalAuthentication.uuid(principal.tenantId());
           var header=exchange.getRequest().getHeaders().get("X-Actor-Id");
           if(header!=null && (header.size()!=1 || !actor.equals(TerminalAuthentication.uuid(header.getFirst()))))
             return Mono.error(new TerminalDeniedException("STAFF_ACTOR_MISMATCH"));
@@ -80,8 +90,12 @@ final class TerminalAccessFilter implements WebFilter {
             Map.of("tenantId",tenant,"actorId",actor,"method",method,"path",path,"terminal","finance")))
           .timeout(Duration.ofSeconds(5))
           .filter(decision -> decision.granted() && decision.obligations().isEmpty())
-          .filter(decision -> TerminalAuthentication.valid(principal,clock))
-          .map(decision -> actor)
+          .filter(decision -> TerminalAuthentication.valid(principal,clock)
+              &&(!posting.route(method,path)||posting.valid(principal,clock)&&posting.scoped(principal,path)))
+          .flatMap(decision -> posting.route(method,path)
+              ? contexts.currentPrincipal().filter(principal::equals)
+                  .filter(current -> posting.valid(current,clock)&&posting.scoped(current,path)).map(current -> actor)
+              : Mono.just(actor))
           .switchIfEmpty(Mono.error(new TerminalDeniedException("STAFF_ACCESS_DENIED")))
           .onErrorMap(error -> new TerminalDeniedException("STAFF_ACCESS_DENIED"));
       });

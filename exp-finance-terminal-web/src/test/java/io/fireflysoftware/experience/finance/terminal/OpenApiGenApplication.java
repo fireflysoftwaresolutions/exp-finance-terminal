@@ -1,19 +1,12 @@
 package io.fireflysoftware.experience.finance.terminal;
-
+import org.fireflyframework.web.openapi.EnableOpenApiGen;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Profile;
-
-/** Starts the production controller and wiring without scanning test fixture configurations. */
-@SpringBootConfiguration
-@EnableAutoConfiguration
+import org.springframework.context.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+/** Complete actual-controller producer, isolated from technical and financial runtime configurations. */
+@EnableOpenApiGen
 @Profile("openapi-gen")
-@Import({StaffController.class, TerminalWiring.class, TerminalExceptionHandler.class,
-    TerminalSecurityConfiguration.class})
-public class OpenApiGenApplication {
-  public static void main(String[] args) {
-    SpringApplication.run(OpenApiGenApplication.class, args);
-  }
-}
+@ComponentScan(basePackages="io.fireflysoftware.experience.finance.terminal",useDefaultFilters=false,
+    includeFilters=@ComponentScan.Filter(type=FilterType.ANNOTATION,classes=RestController.class),
+    excludeFilters=@ComponentScan.Filter(type=FilterType.REGEX,pattern=".*Test\\$.*"))
+public class OpenApiGenApplication {public static void main(String[] args){SpringApplication.run(OpenApiGenApplication.class,args);}}

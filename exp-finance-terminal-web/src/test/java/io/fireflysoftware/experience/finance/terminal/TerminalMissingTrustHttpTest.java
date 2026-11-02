@@ -9,13 +9,19 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 @SpringBootTest(classes=TerminalMissingTrustHttpTest.Application.class,
   webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT,
   properties={"server.address=127.0.0.1","firefly.terminal.security.issuer=","firefly.terminal.security.audience=",
     "firefly.terminal.security.jwk-set-uri=","firefly.eda.enabled=false","firefly.stepevents.enabled=false"})
 class TerminalMissingTrustHttpTest {
-  @SpringBootConfiguration @EnableAutoConfiguration
+  @DynamicPropertySource static void cache(DynamicPropertyRegistry properties) {
+    properties.add("firefly.cache.default-cache-type",()->"CAFFEINE");
+  }
+  @SpringBootConfiguration @EnableAutoConfiguration(excludeName={"org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration",
+      "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration"})
   @Import({TerminalSecurityConfiguration.class,TerminalDefaultDenyHttpTest.Probe.class})
   static class Application{}
   @LocalServerPort int port;

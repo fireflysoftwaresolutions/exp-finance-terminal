@@ -14,10 +14,15 @@ api-configuration:
       base-path: ${SECURITY_CENTER_URL:http://localhost:8085}
 
 firefly:
+  openapi:
+    instant-scalar:
+      enabled: true
   security:
     resource-server:
       strict-policy: true
   terminal:
+    managed-posting:
+      enabled: false
     bank-owner:
       enabled: false
     adapter: ${FIREFLY_TERMINAL_ADAPTER:sandbox}

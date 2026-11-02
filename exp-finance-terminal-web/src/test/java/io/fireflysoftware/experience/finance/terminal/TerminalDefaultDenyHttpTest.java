@@ -40,6 +40,7 @@ class TerminalDefaultDenyHttpTest {
     }catch(Exception e){throw new ExceptionInInitializerError(e);}
   }
   @DynamicPropertySource static void trust(DynamicPropertyRegistry p){
+    p.add("firefly.cache.default-cache-type",()->"CAFFEINE");
     p.add("firefly.terminal.security.issuer",()->"https://synthetic.default.invalid");
     p.add("firefly.terminal.security.audience",()->"staff-finance");
     p.add("firefly.terminal.security.jwk-set-uri",()->"http://127.0.0.1:"+JWKS.getAddress().getPort()+"/jwks");
@@ -47,7 +48,8 @@ class TerminalDefaultDenyHttpTest {
   @AfterAll static void stop(){JWKS.stop(0);}
   @BeforeEach void reset(){EFFECTS.set(0);}
   @LocalServerPort int port;
-  @SpringBootConfiguration @EnableAutoConfiguration
+  @SpringBootConfiguration @EnableAutoConfiguration(excludeName={"org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration",
+      "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration"})
   @Import({TerminalSecurityConfiguration.class,Probe.class})
   static class Application{}
   @RestController static class Probe{

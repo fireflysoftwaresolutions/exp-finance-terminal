@@ -21,6 +21,7 @@ import org.fireflyframework.security.rs.AccessTokenValidators;
 import org.fireflyframework.security.spi.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -31,12 +32,15 @@ import org.springframework.security.web.server.context.NoOpServerSecurityContext
 import reactor.core.publisher.Mono;
 
 @Configuration(proxyBeanMethods=false)
+@EnableConfigurationProperties(ManagedPostingStaffTrust.class)
 public class TerminalSecurityConfiguration {
   @Bean
   ReactiveJwtDecoder terminalJwtDecoder(
       @Value("${firefly.terminal.security.issuer:}") String issuer,
       @Value("${firefly.terminal.security.audience:}") String audience,
-      @Value("${firefly.terminal.security.jwk-set-uri:}") String jwks) {
+      @Value("${firefly.terminal.security.jwk-set-uri:}") String jwks,ManagedPostingStaffTrust posting) {
+    if(posting.enabled()&&(!posting.issuer().equals(issuer)||!posting.audience().equals(audience)))
+      throw new IllegalStateException("Managed posting must use the configured native terminal issuer and audience");
     if (issuer.isBlank() || audience.isBlank() || jwks.isBlank())
       return token -> Mono.error(new BadJwtException("Staff trust is not configured"));
     var decoder=NimbusReactiveJwtDecoder.withJwkSetUri(jwks).build();
@@ -48,9 +52,9 @@ public class TerminalSecurityConfiguration {
   @Order(-100)
   SecurityWebFilterChain terminalSecurity(ServerHttpSecurity http, ReactiveJwtDecoder decoder,
       PrincipalFactory principals, SecurityContextPort contexts, PolicyDecisionPort policies,
-      @Value("${firefly.security.resource-server.strict-policy:false}") boolean strictPolicy) {
+      @Value("${firefly.security.resource-server.strict-policy:false}") boolean strictPolicy,ManagedPostingStaffTrust posting) {
     var clock=Clock.systemUTC();
-    var authentication=new TerminalAuthentication(principals,clock);
+    var authentication=new TerminalAuthentication(principals,clock,posting);
     return http.securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
         .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
         .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
@@ -61,7 +65,7 @@ public class TerminalSecurityConfiguration {
           .anyExchange().denyAll())
         .oauth2ResourceServer(resource -> resource.jwt(jwt -> jwt.jwtDecoder(decoder)
           .jwtAuthenticationConverter(token -> authentication.convert(token).cast(AbstractAuthenticationToken.class))))
-        .addFilterBefore(new TerminalAccessFilter(contexts,policies,clock,strictPolicy),SecurityWebFiltersOrder.AUTHORIZATION)
+        .addFilterBefore(new TerminalAccessFilter(contexts,policies,clock,strictPolicy,posting),SecurityWebFiltersOrder.AUTHORIZATION)
         .build();
   }
 }

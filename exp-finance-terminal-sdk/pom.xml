@@ -79,6 +79,7 @@
 
     <build>
         <plugins>
+            <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-resources-plugin</artifactId><executions><execution><id>mirror-producer-openapi-compatibility-resource</id><phase>process-resources</phase><goals><goal>copy-resources</goal></goals><configuration><outputDirectory>${project.build.outputDirectory}/api-spec</outputDirectory><overwrite>true</overwrite><resources><resource><directory>${project.basedir}/src/main/resources</directory><filtering>false</filtering><includes><include>openapi.yml</include></includes></resource></resources></configuration></execution></executions></plugin>
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -96,6 +97,7 @@
                             <apiPackage>io.fireflysoftware.experience.finance.terminal.sdk.api</apiPackage>
                             <modelPackage>io.fireflysoftware.experience.finance.terminal.sdk.model</modelPackage>
                             <invokerPackage>io.fireflysoftware.experience.finance.terminal.sdk.invoker</invokerPackage>
+                            <schemaMappings><schemaMapping>FireflyInstant=java.time.Instant</schemaMapping></schemaMappings>
                             <configOptions>
                                 <java20>true</java20>
                                 <useTags>true</useTags>
