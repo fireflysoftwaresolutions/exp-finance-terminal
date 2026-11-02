@@ -1,0 +1,53 @@
+# Stateless current-owner read; no terminal-owned relational store is introduced.
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
+      - org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration
+      - org.springframework.boot.data.r2dbc.autoconfigure.DataR2dbcAutoConfiguration
+      - org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration
+  security:
+    oauth2:
+      client:
+        registration:
+          organization-domain-owner-read:
+            provider: organization-domain-owner
+            client-id: ${FIREFLY_TERMINAL_OWNER_CLIENT_ID}
+            client-secret: ${FIREFLY_TERMINAL_OWNER_CLIENT_SECRET}
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: client_credentials
+        provider:
+          organization-domain-owner:
+            token-uri: ${FIREFLY_TERMINAL_OWNER_TOKEN_URI}
+firefly:
+  orchestration:
+    rest:
+      enabled: false
+  security:
+    resource-server:
+      enabled: true
+      strict-policy: true
+      tenant-required: true
+      tenant-claim-paths: [tenant_id]
+  terminal:
+    security:
+      issuer: ${FIREFLY_TERMINAL_STAFF_ISSUER}
+      audience: ${FIREFLY_TERMINAL_STAFF_AUDIENCE}
+      jwk-set-uri: ${FIREFLY_TERMINAL_STAFF_JWKS_URI}
+    bank-owner:
+      enabled: true
+      policy:
+        base-uri: ${FIREFLY_TERMINAL_OWNER_POLICY_BASE_URI}
+        decision-path: ${FIREFLY_TERMINAL_OWNER_POLICY_DECISION_PATH}
+      machine:
+        tenant-id: ${FIREFLY_TERMINAL_OWNER_RESOURCE_TENANT_ID}
+        bank-id: ${FIREFLY_TERMINAL_OWNER_RESOURCE_BANK_ID}
+        registration-id: organization-domain-owner-read
+        base-uri: ${FIREFLY_TERMINAL_OWNER_DOMAIN_BASE_URI}
+        token-uri: ${FIREFLY_TERMINAL_OWNER_TOKEN_URI}
+        jwks-uri: ${FIREFLY_TERMINAL_OWNER_JWKS_URI}
+        issuer: ${FIREFLY_TERMINAL_OWNER_ISSUER}
+        audience: ${FIREFLY_TERMINAL_OWNER_AUDIENCE}
+        subject: ${FIREFLY_TERMINAL_OWNER_SUBJECT}
+        client-id: ${FIREFLY_TERMINAL_OWNER_CLIENT_ID}
+        machine-tenant-id: ${FIREFLY_TERMINAL_OWNER_MACHINE_TENANT_ID}

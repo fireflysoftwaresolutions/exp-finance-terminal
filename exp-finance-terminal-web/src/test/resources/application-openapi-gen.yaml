@@ -1,0 +1,17 @@
+spring:
+  autoconfigure:
+    exclude:
+      - io.fireflysoftware.experience.finance.terminal.web.owner.TerminalOwnerPolicyAutoConfiguration
+firefly:
+  openapi:
+    instant-scalar:
+      enabled: true
+  terminal:
+    bank-owner:
+      enabled: true
+    managed-posting:
+      enabled: true
+springdoc:
+  api-docs:
+    enabled: true
+    version: OPENAPI_3_0

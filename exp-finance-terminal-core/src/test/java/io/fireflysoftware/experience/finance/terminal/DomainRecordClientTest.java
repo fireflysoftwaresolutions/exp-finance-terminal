@@ -17,6 +17,8 @@
 
 package io.fireflysoftware.experience.finance.terminal;
 
+import io.fireflysoftware.experience.finance.terminal.impl.DomainRecordClientImpl;
+
 import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountBackofficeApi;
 import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountHoldersApi;
 import io.fireflysoftware.domain.banking.accounts.sdk.api.AccountsApi;
@@ -60,7 +62,7 @@ class DomainRecordClientTest {
     private MortgageAgreementsApi mortgages;
     private SupplyChainFinanceAgreementsApi supplyChain;
     private CollateralCasesApi collateral;
-    private DomainRecordClient client;
+    private DomainRecordClientImpl client;
 
     @BeforeEach
     void setUp() {
@@ -71,7 +73,7 @@ class DomainRecordClientTest {
         collateral = mock(CollateralCasesApi.class);
         ConfigurationPort configuration = new SandboxConfigurationStore(
                 FinanceSamples.properties(), FinanceSamples.currencies(), FinanceSamples.countries());
-        client = new DomainRecordClient(configuration, Set.of(
+        client = new DomainRecordClientImpl(configuration, Set.of(
                 "accounts", "cards", "lending-applications", "mortgage-agreements",
                 "supply-chain-finance-agreements", "collateral-cases", "collection-cases",
                 "provisioning-cases", "aml-cases"),
@@ -96,7 +98,7 @@ class DomainRecordClientTest {
         verify(mortgages).update(eq(command.recordId()), body.capture(), any());
         assertEquals(actor.toString(), body.getValue().getUpdatedBy());
         assertEquals(actor, updated.actorId());
-        assertEquals(FinanceSamples.CUSTOMER_PARTY, updated.customerPartyId());
+        org.junit.jupiter.api.Assertions.assertNull(updated.customerPartyId());
     }
 
     @Test
@@ -106,6 +108,7 @@ class DomainRecordClientTest {
                 FinanceSamples.CUSTOMER_PARTY, "Add the customer", null, null, null, null, actor, null, null);
         when(accountHolders.addHolder(eq(command.recordId()), any(), any())).thenReturn(Mono.just(new AddHolderResponse()));
         AccountDTO account = new AccountDTO();
+        account.setAccountId(command.recordId());
         account.setAccountStatus(AccountDTO.AccountStatusEnum.OPEN);
         account.setAccountNumber("ACC-1");
         when(accountBackoffice.getAccount(eq(command.recordId()), any())).thenReturn(Mono.just(account));
@@ -124,6 +127,7 @@ class DomainRecordClientTest {
         RecordCommand command = new RecordCommand(FinanceArea.COLLATERAL_CASE, FinanceArea.COLLATERAL_CASE.primaryId(),
                 FinanceSamples.CUSTOMER_PARTY, "Release", null, null, null, null, actor, "RELEASED", null);
         CollateralCaseDTO closed = new CollateralCaseDTO();
+        closed.setCollateralCaseId(command.recordId());
         closed.setCollateralStatus(CollateralCaseDTO.CollateralStatusEnum.RELEASED);
         when(collateral.close(eq(command.recordId()), any(), any())).thenReturn(Mono.just(closed));
 
@@ -158,6 +162,7 @@ class DomainRecordClientTest {
 
     private static MortgageAgreementDTO mortgage(MortgageAgreementDTO.AgreementStatusEnum status) {
         MortgageAgreementDTO agreement = new MortgageAgreementDTO();
+        agreement.setMortgageAgreementId(FinanceArea.MORTGAGE_AGREEMENT.primaryId());
         agreement.setAgreementStatus(status);
         agreement.setApplicationId(UUID.fromString("10000000-0000-4000-8000-000000000099"));
         agreement.setMortgageType(MortgageAgreementDTO.MortgageTypeEnum.CONVENTIONAL);
@@ -167,6 +172,8 @@ class DomainRecordClientTest {
 
     private static SupplyChainFinanceAgreementDTO supplyChain(SupplyChainFinanceAgreementDTO.StatusEnum status) {
         SupplyChainFinanceAgreementDTO agreement = new SupplyChainFinanceAgreementDTO();
+        agreement.setId(status == SupplyChainFinanceAgreementDTO.StatusEnum.ACTIVE
+                ? FinanceSamples.SCF_ACTIVE : FinanceArea.SUPPLY_CHAIN_FINANCE_AGREEMENT.primaryId());
         agreement.setStatus(status);
         agreement.setAgreementNumber("SCF-1");
         agreement.setCurrency("EUR");

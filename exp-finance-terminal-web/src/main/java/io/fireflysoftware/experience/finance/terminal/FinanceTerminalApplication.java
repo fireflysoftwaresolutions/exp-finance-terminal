@@ -20,7 +20,8 @@ package io.fireflysoftware.experience.finance.terminal;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(excludeName = {"org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration",
+        "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration"})
 public class FinanceTerminalApplication {
 
     public static void main(String[] args) {
